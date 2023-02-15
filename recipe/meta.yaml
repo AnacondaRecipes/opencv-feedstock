@@ -29,6 +29,7 @@ build:
     - python
   missing_dso_whitelist:     # [osx]
     - "*"   # [osx]
+  # trigger: 0
 
 requirements:
   build:
