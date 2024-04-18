@@ -131,7 +131,7 @@ outputs:
         - glib 2                # [not ppc64le]
         - gst-plugins-base 1.14  # [not (win or ppc64le)]
         - gstreamer 1.14        # [not (win or ppc64le)]
-        - gst-plugins-base 1.18.5 [win]
+        - gst-plugins-base 1.18.5  # [win]
         - gstreamer 1.18.5      # [win]
         - harfbuzz 4.3.0        # [not win]
         - hdf5 1.12.1
