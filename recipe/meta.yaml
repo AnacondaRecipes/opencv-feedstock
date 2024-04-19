@@ -28,8 +28,9 @@ source:
 
 build:
   number: {{ build_num }}
-  # Package not supported on win32 and s390x
-  skip: true  # [win32 or s390x]
+  # Package not supported on s390x
+  skip: true  # [s390x]
+  skip: true  # [unix]
   ignore_run_exports_from:
     - python
   missing_dso_whitelist:     # [osx]
