@@ -1,4 +1,4 @@
-{% set version = "4.8.1" %}
+{% set version = "4.9.0" %}
 {% set build_num = "0" %}
 
 {% if target_platform != "linux-aarch64" and target_platform != "linux-64"%}
@@ -20,10 +20,10 @@ package:
 source:
   - url: https://github.com/opencv/opencv/archive/{{ version }}.zip
     fn: opencv-{{ version }}.zip
-    sha256: b0383d3655afafd34c27fe11cb17d448df0a5392bd7c5629f9991a80f5841dbc
+    sha256: ddf76f9dffd322c7c3cb1f721d0887f62d747b82059342213138dc190f28bc6c
   - url: https://github.com/opencv/opencv_contrib/archive/{{ version }}.tar.gz
     fn: opencv_contrib-{{ version }}.tar.gz
-    sha256: 0c082a0b29b3118f2a0a1856b403bb098643af7b994a0080f402a12159a99c6e
+    sha256: 8952c45a73b75676c522dd574229f563e43c271ae1d5bbbd26f8e2b6bc1a4dae
     folder: opencv_contrib-{{ version }}
 
 build:
