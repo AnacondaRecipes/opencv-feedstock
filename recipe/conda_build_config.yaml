@@ -2,7 +2,3 @@ build_variant:
   - normal
   # As of 5/30/2022 headles is only to be available on the sfe1ed40 channel
   # - headless
-c_compiler:
-  - vs2019                     # [win]
-cxx_compiler:
-  - vs2019                     # [win]
