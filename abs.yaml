@@ -1,3 +1,6 @@
 build_parameters:
   - "--suppress-variables"
   - "--error-overlinking"
+
+channels:
+  - https://staging.continuum.io/prefect/fs/jasper-feedstock/pr2/502ea1c
