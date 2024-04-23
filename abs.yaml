@@ -3,4 +3,4 @@ build_parameters:
   - "--error-overlinking"
 
 channels:
-  - https://staging.continuum.io/prefect/fs/jasper-feedstock/pr2/502ea1c
+  - https://staging.continuum.io/prefect/fs/jasper-feedstock/pr2/e84768f
