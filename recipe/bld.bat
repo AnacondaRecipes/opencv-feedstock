@@ -35,6 +35,7 @@ rem opencv build
 
 
 cmake .. -LAH -G Ninja             ^
+    -DCMAKE_CXX_STANDARD=17        ^
     -DOPENCV_GENERATE_PKGCONFIG=ON ^
     -DBUILD_DOCS=0                 ^
     -DBUILD_IPP_IW=0               ^
@@ -59,15 +60,17 @@ cmake .. -LAH -G Ninja             ^
     -DCMAKE_BUILD_TYPE="Release"   ^
     -DCMAKE_FIND_ROOT_PATH=%PREFIX%;%BUILD_PREFIX%  ^
     -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%         ^
+    -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%            ^
     -DCMAKE_SYSTEM_PREFIX_PATH=%LIBRARY_PREFIX%     ^
     -DENABLE_CONFIG_VERIFICATION=ON                 ^
     -DENABLE_PRECOMPILED_HEADERS=OFF                ^
     -DINSTALL_C_EXAMPLES=0                          ^
     -DOPENCV_BIN_INSTALL_PATH=bin                   ^
-    -DOPENCV_CONFIG_INSTALL_PATH="lib/cmake/"       ^
+    -DOPENCV_CONFIG_INSTALL_PATH="cmake"       ^
     -DOPENCV_DOWNLOAD_PARAMS=INACTIVITY_TIMEOUT;30;TIMEOUT;180;SHOW_PROGRESS  ^
     -DOPENCV_DOWNLOAD_TRIES=1;2;3;4;5               ^
-    -DOPENCV_EXTRA_MODULES_PATH=%SRC_DIR%/opencv_contrib-%PKG_VERSION%/modules      ^
+    -DOPENCV_ENABLE_PKG_CONFIG=1                    ^
+    -DOPENCV_EXTRA_MODULES_PATH=%SRC_DIR%/opencv_contrib/modules      ^
     -DOPENCV_GENERATE_SETUPVARS=OFF                 ^
     -DOPENCV_INSTALL_BINARIES_PREFIX="opencv"       ^
     -DOPENCV_INSTALL_BINARIES_SUFFIX=""             ^
@@ -84,10 +87,11 @@ cmake .. -LAH -G Ninja             ^
     -DWITH_CUDA=0                                   ^
     -DWITH_DIRECTX=0                                ^
     -DWITH_EIGEN=1                                  ^
-    -DWITH_FFMPEG=0                                 ^
+    -DWITH_FFMPEG=1                                 ^
     -DWITH_GSTREAMER=1                              ^
     -DWITH_GTK=0                                    ^
-    -DWITH_JASPER=0                                 ^
+    -DWITH_HDF5=1                                   ^
+    -DWITH_JASPER=1                                 ^
     -DWITH_LAPACK=0                                 ^
     -DWITH_MSMF_DXVA=0                              ^
     -DWITH_OPENCL=0                                 ^
@@ -98,16 +102,25 @@ cmake .. -LAH -G Ninja             ^
     -DWITH_OPENNI=0                                 ^
     -DWITH_PROTOBUF=1                               ^
     -DWITH_QT=%QT_VERSION%                          ^
-    -DWITH_ZLIB=1 -DWITH_PNG=1 -DWITH_TIFF=1 -DWITH_TBB=0      ^
+    -DWITH_ZLIB=1                                   ^
+    -DWITH_PNG=1                                    ^
+    -DWITH_TIFF=1                                   ^
+    -DWITH_TBB=0                                    ^
     -DWITH_TENGINE=0                                ^
     -DWITH_TESSERACT=0                              ^
     -DWITH_VTK=0                                    ^
     -DWITH_WEBP=1                                   ^
-    -DWITH_WIN32UI=0
+    -DWITH_WIN32UI=0                                ^
+    -DOPENCV_SKIP_PYTHON_LOADER=1                            ^
+    -DPYTHON3_INCLUDE_DIR=%PREFIX%/include                   ^
+    -DPYTHON3_NUMPY_INCLUDE_DIRS=%SP_DIR%/numpy/core/include ^
+    -DPYTHON3_LIBRARY=%PREFIX%/libs/%PY_LIB%                 ^
+    -DPYTHON3_PACKAGES_PATH=%SP_DIR%                         ^
+    -DOPENCV_PYTHON3_INSTALL_PATH=%SP_DIR%                   ^
+    -DOPENCV_PYTHON_PIP_METADATA_INSTALL=ON                  ^
+    -DOPENCV_PYTHON_PIP_METADATA_INSTALLER:STRING="conda"
 
-if errorlevel 1 exit /b 1
-cmake --build .
-if errorlevel 1 exit /b 1
-echo cmake --build . ok
-echo exiting the lot OK.
-exit /b 0
+if %ERRORLEVEL% neq 0 (type CMakeError.log && exit 1)
+
+cmake --build . --target install --config Release
+if %ERRORLEVEL% neq 0 exit 1

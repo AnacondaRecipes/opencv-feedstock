@@ -109,7 +109,7 @@ cmake .. -LAH -GNinja                                                     \
   -DWITH_CUDA=OFF                                                         \
   -DWITH_GTK=OFF                                                          \
   -DWITH_ITT=OFF                                                          \
-  -DWITH_JASPER=OFF                                                       \
+  -DWITH_JASPER=ON                                                      \
   -DWITH_LAPACK=OFF                                                       \
   -DWITH_MATLAB=OFF                                                       \
   -DWITH_OPENCL=OFF                                                       \
