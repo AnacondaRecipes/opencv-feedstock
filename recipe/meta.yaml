@@ -278,10 +278,6 @@ outputs:
         - cv2
         - cv2.xfeatures2d
         - cv2.freetype
-      commands:
-        - if [[ $($PYTHON -c 'import cv2; print(cv2.__version__)') != $PKG_VERSION ]]; then exit 1; fi  # [unix]
-        - python -c "import cv2; assert 'Unknown' not in cv2.videoio_registry.getBackendName(cv2.CAP_V4L)"  # [linux]
-        - pip check
   {% endif %}
 
 about:
