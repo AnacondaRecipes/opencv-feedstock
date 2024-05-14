@@ -65,7 +65,7 @@ requirements:
     - gst-plugins-base 1.18.5  # [win]
     - harfbuzz 4.3.0           # [not win]
     - hdf5 1.12.1
-    - jasper 4.2.3             # [not s390x]
+    - jasper 4.2.4             # [not s390x]
     - jpeg {{ jpeg }}          # [not win]
     - openjpeg 2.3.0           # [not (win or arm64)]
     - openblas-devel 0.3.21    # [x86_64 and not win]
@@ -119,7 +119,7 @@ outputs:
         - gstreamer 1.18.5      # [win]
         - harfbuzz 4.3.0        # [not win]
         - hdf5 1.12.1
-        - jasper 4.2.3            # [not s390x]
+        - jasper 4.2.4            # [not s390x]
         - jpeg {{ jpeg }}         # [not win]
         - openjpeg 2.3.0             # [not (arm64 or win)]
         - openblas-devel 0.3.21  # [x86_64 and not win]
