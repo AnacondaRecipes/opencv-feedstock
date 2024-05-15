@@ -3,21 +3,26 @@ setlocal EnableDelayedExpansion
 md build
 pushd build
 
-if "%vc%" == "9" (
-  echo "Copying stdint.h for windows"
-  copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\calib3d\include\stdint.h
-  copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\videoio\include\stdint.h
-  copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\highgui\include\stdint.h
+if "%PY3K%" == "0" (
+    echo "Copying stdint.h for windows"
+    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\calib3d\include\stdint.h
+    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\videoio\include\stdint.h
+    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\highgui\include\stdint.h
 )
 
 if "%build_variant%" == "normal" (
   echo "Building normal variant"
-  set QT_VERSION=5
+  set WITH_QT="-DWITH_QT=5"
 )
 else (
   echo "Building headless variant"
-  set QT_VERSION=0
+  set WITH_QT=0
 )
+
+:: FFMPEG building requires pkgconfig
+set PKG_CONFIG_PATH="%LIBRARY_BIN%\pkgconfig;%LIBRARY_LIB%\pkgconfig;%LIBRARY_PREFIX%\share\pkgconfig;%BUILD_PREFIX%\Library\lib\pkgconfig;%BUILD_PREFIX%\Library\bin\pkgconfig"
+set PKG_CONFIG_EXECUTABLE=%LIBRARY_BIN%\pkg-config
+
 
 :: The following options are set in a way to make sure that the cmake files for
 :: both the main library and modules/functionality are detected correctly by
@@ -34,8 +39,7 @@ rem directory in the build directory to see what has been vendored by the
 rem opencv build
 
 
-cmake .. -LAH -G Ninja             ^
-    -DCMAKE_CXX_STANDARD=17        ^
+cmake .. -LAH %CMAKE_ARGS% -G Ninja             ^
     -DOPENCV_GENERATE_PKGCONFIG=ON ^
     -DBUILD_DOCS=0                 ^
     -DBUILD_IPP_IW=0               ^
@@ -60,24 +64,25 @@ cmake .. -LAH -G Ninja             ^
     -DCMAKE_BUILD_TYPE="Release"   ^
     -DCMAKE_FIND_ROOT_PATH=%PREFIX%;%BUILD_PREFIX%  ^
     -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%         ^
-    -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%            ^
     -DCMAKE_SYSTEM_PREFIX_PATH=%LIBRARY_PREFIX%     ^
     -DENABLE_CONFIG_VERIFICATION=ON                 ^
     -DENABLE_PRECOMPILED_HEADERS=OFF                ^
     -DINSTALL_C_EXAMPLES=0                          ^
     -DOPENCV_BIN_INSTALL_PATH=bin                   ^
-    -DOPENCV_CONFIG_INSTALL_PATH="cmake"       ^
+    -DOPENCV_CONFIG_INSTALL_PATH="lib/cmake/"       ^
     -DOPENCV_DOWNLOAD_PARAMS=INACTIVITY_TIMEOUT;30;TIMEOUT;180;SHOW_PROGRESS  ^
     -DOPENCV_DOWNLOAD_TRIES=1;2;3;4;5               ^
-    -DOPENCV_ENABLE_PKG_CONFIG=1                    ^
-    -DOPENCV_EXTRA_MODULES_PATH=%SRC_DIR%/opencv_contrib/modules      ^
+    -DOPENCV_EXTRA_MODULES_PATH=%SRC_DIR%/opencv_contrib-%PKG_VERSION%/modules      ^
     -DOPENCV_GENERATE_SETUPVARS=OFF                 ^
     -DOPENCV_INSTALL_BINARIES_PREFIX="opencv"       ^
     -DOPENCV_INSTALL_BINARIES_SUFFIX=""             ^
     -DOPENCV_LIB_INSTALL_PATH=lib                   ^
+    -DOPENCV_ENABLE_PKG_CONFIG=1                                                    ^
     -DOPENCV_PYTHON2_INSTALL_PATH=""                ^
     -DOPENCV_PYTHON3_INSTALL_PATH=%SP_DIR%          ^
     -DOPENCV_SKIP_PYTHON_LOADER=1                   ^
+    -DOPENCV_PYTHON_PIP_METADATA_INSTALL=ON                                         ^
+    -DOPENCV_PYTHON_PIP_METADATA_INSTALLER:STRING="conda"                           ^
     -DPROTOBUF_UPDATE_FILES=1                       ^
     -DPYTHON3_EXECUTABLE=%PREFIX%/python.exe        ^
     -DPYTHON_DEFAULT_EXECUTABLE=%PREFIX%/python.exe ^
@@ -87,7 +92,8 @@ cmake .. -LAH -G Ninja             ^
     -DWITH_CUDA=0                                   ^
     -DWITH_DIRECTX=0                                ^
     -DWITH_EIGEN=1                                  ^
-    -DWITH_FFMPEG=1                                 ^
+    -DWITH_FFMPEG=0                                 ^
+    -DWITH_FREETYPE=1                               ^
     -DWITH_GSTREAMER=1                              ^
     -DWITH_GTK=0                                    ^
     -DWITH_HDF5=1                                   ^
@@ -101,26 +107,17 @@ cmake .. -LAH -G Ninja             ^
     -DWITH_OPENJPEG=0                               ^
     -DWITH_OPENNI=0                                 ^
     -DWITH_PROTOBUF=1                               ^
-    -DWITH_QT=%QT_VERSION%                          ^
-    -DWITH_ZLIB=1                                   ^
-    -DWITH_PNG=1                                    ^
-    -DWITH_TIFF=1                                   ^
-    -DWITH_TBB=0                                    ^
+    %WITH_QT%                                       ^
+    -DWITH_ZLIB=1 -DWITH_PNG=1 -DWITH_TIFF=1 -DWITH_TBB=0      ^
     -DWITH_TENGINE=0                                ^
     -DWITH_TESSERACT=0                              ^
     -DWITH_VTK=0                                    ^
     -DWITH_WEBP=1                                   ^
-    -DWITH_WIN32UI=0                                ^
-    -DOPENCV_SKIP_PYTHON_LOADER=1                            ^
-    -DPYTHON3_INCLUDE_DIR=%PREFIX%/include                   ^
-    -DPYTHON3_NUMPY_INCLUDE_DIRS=%SP_DIR%/numpy/core/include ^
-    -DPYTHON3_LIBRARY=%PREFIX%/libs/%PY_LIB%                 ^
-    -DPYTHON3_PACKAGES_PATH=%SP_DIR%                         ^
-    -DOPENCV_PYTHON3_INSTALL_PATH=%SP_DIR%                   ^
-    -DOPENCV_PYTHON_PIP_METADATA_INSTALL=ON                  ^
-    -DOPENCV_PYTHON_PIP_METADATA_INSTALLER:STRING="conda"
+    -DWITH_WIN32UI=0
 
 if %ERRORLEVEL% neq 0 (type CMakeError.log && exit 1)
 
-cmake --build . --target install --config Release
+cmake --build . --target install --config Release -j%CPU_COUNT%
 if %ERRORLEVEL% neq 0 exit 1
+
+exit /b 0

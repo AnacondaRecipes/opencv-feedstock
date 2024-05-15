@@ -47,7 +47,8 @@ requirements:
     - {{ compiler('cxx') }}
     - curl
     - unzip     # [not win]
-    - ninja-base
+    - 7zip      # [win]
+    - ninja
     - pkg-config
     - m2-patch  # [win]
     - patch     # [unix]
@@ -63,7 +64,10 @@ requirements:
     - gstreamer 1.14           # [not (win or ppc64le)]
     - gstreamer 1.18.5         # [win]
     - gst-plugins-base 1.18.5  # [win]
-    - harfbuzz 4.3.0           # [not win]
+    # harfbuzz, glib, gettext are both needed for freetype support
+    - gettext 0.21.0           # [not win]
+    - m2-gettext 0.19.7        # [win]
+    - harfbuzz 4.3.0
     - hdf5 1.12.1
     - jasper 4.2.4             # [not s390x]
     - jpeg {{ jpeg }}          # [not win]
@@ -102,8 +106,6 @@ outputs:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - ninja
-        - cmake
-        - pkg-config
         - {{ cdt('mesa-libGL-devel') }}         # [aarch64]
         - {{ cdt('mesa-libEGL-devel') }}        # [aarch64]
       host:
@@ -117,7 +119,10 @@ outputs:
         - gstreamer 1.14        # [not (win or ppc64le)]
         - gst-plugins-base 1.18.5  # [win]
         - gstreamer 1.18.5      # [win]
-        - harfbuzz 4.3.0        # [not win]
+        # harfbuzz, glib, gettext are both needed for freetype support
+        - gettext 0.21.0    # [not win]
+        - m2-gettext 0.19.7 # [win]
+        - harfbuzz 4.3.0
         - hdf5 1.12.1
         - jasper 4.2.4            # [not s390x]
         - jpeg {{ jpeg }}         # [not win]
@@ -164,7 +169,6 @@ outputs:
       requires:
         - {{ compiler('cxx') }}
         - cmake
-        - python
         - numpy
         - ninja
         - {{ cdt('libselinux-devel') }}      # [linux]
@@ -181,13 +185,12 @@ outputs:
         - {{ cdt('mesa-libgl-devel') }}      # [linux]
         - {{ cdt('xorg-x11-proto-devel') }}  # [linux and build_variant == 'normal']
       files:
-        - test-cmake/CMakeLists.txt
-        - test-cmake/DisplayImage.cpp
+        - CMakeLists.txt
         - test.cpp
       commands:
-        - pushd test-cmake
-        - cmake . -GNinja -DCMAKE_BUILD_TYPE=Release
-        - cmake --build . --verbose
+        - mkdir -p cmake_build_test && pushd cmake_build_test
+        - cmake -G "Ninja" ..
+        - cmake --build . --config Release
         - popd
         # Verify dynamic libraries.
         # "bioinspired", Not working in 3.1.0
@@ -277,8 +280,12 @@ outputs:
         - "*"   # [osx]
     requirements:
       host:
+        - python
+        - numpy {{ numpy }}
         - {{ package_name }} =={{ version }}
       run:
+        - python
+        - {{ pin_compatible('numpy') }}
         - {{ package_name }} =={{ version }}
 
     test:
@@ -286,6 +293,18 @@ outputs:
         - cv2
         - cv2.xfeatures2d
         - cv2.freetype
+      files:
+        - run_py_test.py
+      commands:
+        - python run_py_test.py
+        - if [[ $($PYTHON -c 'import cv2; print(cv2.__version__)') != $PKG_VERSION ]]; then exit 1; fi  # [unix]
+        - python -c "import cv2; assert 'Unknown' not in cv2.videoio_registry.getBackendName(cv2.CAP_V4L)"  # [linux]
+        - pip check
+        - pip list
+        - test $(pip list | grep opencv-python | wc -l) -eq 2  # [unix]
+        - test $(pip list | grep opencv-python-headless | wc -l) -eq 1  # [unix]
+      requires:
+        - pip
   {% endif %}
 
 about:

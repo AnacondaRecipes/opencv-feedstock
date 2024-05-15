@@ -28,4 +28,3 @@ index aa669f36b0..81b1c498d1 100644
  set(_required_ffmpeg_libraries libavcodec libavformat libavutil libswscale)
  set(_used_ffmpeg_libraries ${_required_ffmpeg_libraries})
  if(NOT HAVE_FFMPEG AND PKG_CONFIG_FOUND)
- 
