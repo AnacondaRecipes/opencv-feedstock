@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: Remove it later after debugging
+#export LIBRARY_PATH="$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+
 DEBUG_CMAKE_BUILD_SYSTEM=yes
 declare -a CMAKE_DEBUG_ARGS PYTHON_CMAKE_ARGS VAR_DEPS DEPS_DEFAULTS CMAKE_EXTRA_ARGS
 
@@ -77,7 +80,7 @@ mkdir -p build
 cd build
 cmake .. -LAH -GNinja                                                     \
   ${CMAKE_ARGS}                                                           \
-  "${CMAKE_EXTRA_ARGS[@]}" `#includes platform specific deps and options` \
+  "${CMAKE_EXTRA_ARGS[@]}" \
   "${PYTHON_CMAKE_ARGS[@]}"                                               \
   -DOPENCV_GENERATE_PKGCONFIG=ON                                          \
   -DBUILD_DOCS=0                                                          \
@@ -93,17 +96,17 @@ cmake .. -LAH -GNinja                                                     \
   -DBUILD_TIFF=0                                                          \
   -DBUILD_ZLIB=0                                                          \
   -DBUILD_WEBP=0                                                          \
-  -DBUILD_opencv_apps=OFF `# issue linking with opencv_model_diagnostics` \
+  -DBUILD_opencv_apps=OFF  \
   -DCMAKE_BUILD_TYPE="Release"                                            \
-  -DCMAKE_CROSSCOMPILING=ON         `# may not need`                      \
+  -DCMAKE_CROSSCOMPILING=ON                             \
   -DENABLE_CONFIG_VERIFICATION=ON                                         \
   -DENABLE_FLAKE8=0                                                       \
-  -DENABLE_PYLINT=0      `# used for docs and examples`                   \
+  -DENABLE_PYLINT=0                        \
   -DINSTALL_C_EXAMPLES=OFF                                                \
   -DINSTALL_PYTHON_EXAMPLES=ON                                            \
   -DOPENCV_EXTRA_MODULES_PATH="../opencv_contrib-${PKG_VERSION}/modules"  \
   -DOpenCV_INSTALL_BINARIES_PREFIX=""                                     \
-  -DPROTOBUF_UPDATE_FILES=ON  `# should be used if using protobuf`        \
+  -DPROTOBUF_UPDATE_FILES=ON         \
   -DPYTHON_DEFAULT_EXECUTABLE=${PREFIX}/bin/python                        \
   -DWITH_1394=OFF                                                         \
   -DWITH_CUDA=OFF                                                         \

@@ -1,4 +1,8 @@
 {% set version = "4.9.0" %}
+{% set major_version = version.split('.')[0] %}
+{% set PY_VER_MAJOR = PY_VER.split('.')[0] %}
+{% set PY_VER_MINOR = PY_VER.split('.')[1] %}
+
 {% set build_num = "0" %}
 
 {% if target_platform != "linux-aarch64" and target_platform != "linux-64"%}
@@ -13,29 +17,46 @@
 {%   set package_name = "opencv" %}
 {% endif %}
 
+
+
 package:
-  name: opencv-suite
+  name: libopencv
   version: {{ version }}
 
 source:
-  - url: https://github.com/opencv/opencv/archive/{{ version }}.zip
-    fn: opencv-{{ version }}.zip
-    sha256: 9b5b64d50bf4a3ddeab430a9b13c5f9e023c9e67639ab50a74d0c298b5a61b74
+  - url: https://github.com/opencv/opencv/archive/{{ version }}.tar.gz
+    fn: opencv-{{ version }}.tar.gz
+    sha256: ddf76f9dffd322c7c3cb1f721d0887f62d747b82059342213138dc190f28bc6c
     patches:
       # backport https://github.com/opencv/opencv/pull/21611 (unmerged as of 06/2023)
       - patches_opencv/0001-Add-installation-of-pip-metadata-from-cmake.patch
+      - patches_opencv/0001-Also-install-metadata-for-opencv-python-headless.patch
       - patches_opencv/0002-delete-lines-that-download-opencv.patch
       - patches_opencv/0003-find-pkgconfig-on-windows.patch
       - patches_opencv/0004-fix-detection-for-protobuf-23.x.patch
+      # backport of https://github.com/opencv/opencv/pull/25199
+      - patches_opencv/0005-openvino-2022.1.0-and-newer.patch
+      # backport of https://github.com/opencv/opencv/pull/24878
+      - patches_opencv/0006-opencv-gapi-openvino.patch
   - url: https://github.com/opencv/opencv_contrib/archive/{{ version }}.tar.gz
     fn: opencv_contrib-{{ version }}.tar.gz
     sha256: 8952c45a73b75676c522dd574229f563e43c271ae1d5bbbd26f8e2b6bc1a4dae
     folder: opencv_contrib-{{ version }}
+    patches:
+      # Allow attempt to find HDF5 on cross-compile
+      - patches_opencv_contrib/cmake_hdf5_xpile.patch
+  - fn: test.avi
+    url: https://github.com/opencv/opencv_extra/raw/master/testdata/highgui/video/VID00003-20100701-2204.avi
+    sha256: 78884f64b564a3b06dc6ee731ed33b60c6d8cd864cea07f21d94ba0f90c7b310
 
 build:
   number: {{ build_num }}
   # Package not supported on s390x
   skip: true  # [s390x]
+  run_exports:
+    # https://abi-laboratory.pro/index.php?view=timeline&l=opencv
+    # Things seem to change every patch versions, mostly the dnn module
+    - {{ pin_subpackage('libopencv', max_pin='x.x.x') }}
   ignore_run_exports_from:
     - python
   missing_dso_whitelist:     # [osx]
@@ -55,6 +76,7 @@ requirements:
     - {{ cdt('mesa-libGL-devel') }}  # [linux]
     - {{ cdt('mesa-libEGL-devel') }}  # [linux and not ppc64le]
   host:
+    - _openmp_mutex         # [linux]
     - cmake 3.26.4
     - eigen 3.3.7
     - ffmpeg 4.2.2             # [not (linux and s390x)]
@@ -85,227 +107,169 @@ requirements:
     - qtwebkit =5               # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
     - zlib 1.2.13
 
-outputs:
-  - name: {{ package_name }}
-    script: install.sh                           # [not win]
-    script: install.bat                          # [win]
-    build:
-      missing_dso_whitelist:  # [osx]
-        - "*"                 # [osx]
-    run_exports:
-      # We are cautiously optimistic here that patch-level updates won't break
-      # ABI. However, it sounds like upstream won't guarantee *any* sort of
-      # binary compatibility any longer. See also
-      #
-      #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
-      #
-      - {{ pin_subpackage('opencv', max_pin='x.x') }} # [build_variant == 'normal']
-      - {{ pin_subpackage('opencv-python-headless', max_pin='x.x') }} # [build_variant == 'headless']
-    requirements:
-      build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-        - ninja
-        - {{ cdt('mesa-libGL-devel') }}         # [aarch64]
-        - {{ cdt('mesa-libEGL-devel') }}        # [aarch64]
-      host:
-        - cmake 3.26.4
-        - _openmp_mutex         # [linux]
-        - eigen 3.3.7
-        - ffmpeg 4.2.2                # [not (linux and s390x)]
-        - freetype 2.12
-        - glib 2                # [not ppc64le]
-        - gst-plugins-base 1.14  # [not (win or ppc64le)]
-        - gstreamer 1.14        # [not (win or ppc64le)]
-        - gst-plugins-base 1.18.5  # [win]
-        - gstreamer 1.18.5      # [win]
-        # harfbuzz, glib, gettext are both needed for freetype support
-        - gettext 0.21.0    # [not win]
-        - m2-gettext 0.19.7 # [win]
-        - harfbuzz 4.3.0
-        - hdf5 1.12.1
-        - jasper 4.2.4            # [not s390x]
-        - jpeg {{ jpeg }}         # [not win]
-        - openjpeg 2.3.0             # [not (arm64 or win)]
-        - openblas-devel 0.3.21  # [x86_64 and not win]
-        - libiconv                 # [unix]
-        - libpng 1.6.39
-        - libprotobuf 3.20.3    # [(linux and x86_64) or win]
-        - libtiff 4.5
-        - libwebp-base 1.3.2    # [win or (linux and x86_64)]
-        - numpy {{ numpy }}
-        - python
-        - qt-main >=5.15,<6         # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
-        - qt-webengine >=5.15.7,<6  # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
-        - qtwebkit =5               # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
-        - zlib 1.2.13
-      run:
-        - _openmp_mutex         # [linux]
-        - eigen >=3.3.7
-        - ffmpeg >=4.2.2,<4.3.0a0               # [not (linux and s390x)]
-        - freetype >=2.12.1,<3.0a0
-        - glib >=2.69,<3.0a0                # [not ppc64le]
-        - gst-plugins-base >=1.14.0,<1.15.0a0  # [not (win or ppc64le)]
-        - gstreamer >=1.14.0,<1.15.0a            # [not (win or ppc64le)]
-        - gst-plugins-base >=1.18.5,<1.19.0a # [win]
-        - gstreamer >=1.18.5,<1.19.0a # [win]
-        - harfbuzz >=4.3.0,<5.0a0             # [not win]
-        - hdf5 >=1.12.1,<1.12.2.0a0
-        - jasper >=4,<5          # [not s390x]
-        - jpeg                   # [not win]
-        - openjpeg >=2.3.0,<3.0a0             # [not (arm64 or win)]
-        - libopenblas >=0.3.21,<1.0a0          # [x86_64 and not win]
-        - libpng >=1.6.39,<1.7.0a0
-        - libtiff >=4.5,<5.0a0
-        - libwebp-base          # [win or (linux and x86_64)]
-        - numpy >={{ numpy }},<2
-        - python
-        - qt-main >=5.15,<6         # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
-        - qt-webengine >=5.15.7,<6  # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
-        - qtwebkit =5               # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
-        - zlib >=1.2.13,<1.3.0a0
-
-    test:
-      requires:
-        - {{ compiler('cxx') }}
-        - cmake
-        - numpy
-        - ninja
-        - {{ cdt('libselinux-devel') }}      # [linux]
-        - {{ cdt('libx11-devel') }}          # [linux and build_variant == 'normal']
-        - {{ cdt('libxau-devel') }}          # [linux]
-        - {{ cdt('libxcb') }}                # [linux]
-        - {{ cdt('libxdamage-devel') }}      # [linux]
-        - {{ cdt('libxext-devel') }}         # [linux]
-        - {{ cdt('libxfixes-devel') }}       # [linux]
-        - {{ cdt('libxi-devel') }}           # [linux]
-        - {{ cdt('libxrender-devel') }}      # [linux]
-        - {{ cdt('libxxf86vm') }}            # [linux]
-        - {{ cdt('mesa-dri-drivers') }}      # [linux]
-        - {{ cdt('mesa-libgl-devel') }}      # [linux]
-        - {{ cdt('xorg-x11-proto-devel') }}  # [linux and build_variant == 'normal']
-      files:
-        - CMakeLists.txt
-        - test.cpp
-      commands:
+test:
+    requires:
+      - {{ compiler('c') }}
+      - {{ compiler('cxx') }}
+      - pkg-config                    # [not win]
+      - cmake
+      - numpy
+      - ninja
+      - {{ cdt('libselinux-devel') }}      # [linux]
+      - {{ cdt('libx11-devel') }}          # [linux and build_variant == 'normal']
+      - {{ cdt('libxau-devel') }}          # [linux]
+      - {{ cdt('libxcb') }}                # [linux]
+      - {{ cdt('libxdamage-devel') }}      # [linux]
+      - {{ cdt('libxext-devel') }}         # [linux]
+      - {{ cdt('libxfixes-devel') }}       # [linux]
+      - {{ cdt('libxi-devel') }}           # [linux]
+      - {{ cdt('libxrender-devel') }}      # [linux]
+      - {{ cdt('libxxf86vm') }}            # [linux]
+      - {{ cdt('mesa-dri-drivers') }}      # [linux]
+      - {{ cdt('mesa-libgl-devel') }}      # [linux]
+      - {{ cdt('xorg-x11-proto-devel') }}  # [linux and build_variant == 'normal']
+    files:
+      - CMakeLists.txt
+      - test.cpp
+    commands:
+        # Verify dynamic libraries on all systems
+        {% set win_ver_lib = version|replace(".", "") %}
+        # The bot doesn't support multiline jinja, so use
+        # single line jinja.
+        {% set opencv_libs = [] %}
+        {{ opencv_libs.append("alphamat") or "" }}
+        {{ opencv_libs.append("aruco") or "" }}
+        {{ opencv_libs.append("bgsegm") or "" }}
+        {{ opencv_libs.append("calib3d") or "" }}
+        {{ opencv_libs.append("ccalib") or "" }}
+        {{ opencv_libs.append("core") or "" }}
+        {{ opencv_libs.append("datasets") or "" }}
+        {{ opencv_libs.append("dnn_objdetect") or "" }}
+        {{ opencv_libs.append("dnn_superres") or "" }}
+        {{ opencv_libs.append("dnn") or "" }}
+        {{ opencv_libs.append("dpm") or "" }}
+        {{ opencv_libs.append("face") or "" }}
+        {{ opencv_libs.append("features2d") or "" }}
+        {{ opencv_libs.append("flann") or "" }}
+        {{ opencv_libs.append("fuzzy") or "" }}
+        {{ opencv_libs.append("gapi") or "" }}
+        {{ opencv_libs.append("hfs") or "" }}
+        {{ opencv_libs.append("highgui") or "" }}
+        {{ opencv_libs.append("img_hash") or "" }}
+        {{ opencv_libs.append("imgcodecs") or "" }}
+        {{ opencv_libs.append("imgproc") or "" }}
+        {{ opencv_libs.append("intensity_transform") or "" }}
+        {{ opencv_libs.append("line_descriptor") or "" }}
+        {{ opencv_libs.append("mcc") or "" }}
+        {{ opencv_libs.append("ml") or "" }}
+        {{ opencv_libs.append("objdetect") or "" }}
+        {{ opencv_libs.append("optflow") or "" }}
+        {{ opencv_libs.append("phase_unwrapping") or "" }}
+        {{ opencv_libs.append("photo") or "" }}
+        {{ opencv_libs.append("plot") or "" }}
+        {{ opencv_libs.append("quality") or "" }}
+        {{ opencv_libs.append("rapid") or "" }}
+        {{ opencv_libs.append("reg") or "" }}
+        {{ opencv_libs.append("rgbd") or "" }}
+        {{ opencv_libs.append("saliency") or "" }}
+        {{ opencv_libs.append("shape") or "" }}
+        {{ opencv_libs.append("stereo") or "" }}
+        {{ opencv_libs.append("stitching") or "" }}
+        {{ opencv_libs.append("structured_light") or "" }}
+        {{ opencv_libs.append("superres") or "" }}
+        {{ opencv_libs.append("surface_matching") or "" }}
+        {{ opencv_libs.append("text") or "" }}
+        {{ opencv_libs.append("tracking") or "" }}
+        {{ opencv_libs.append("video") or "" }}
+        {{ opencv_libs.append("videoio") or "" }}
+        {{ opencv_libs.append("videostab") or "" }}
+        {{ opencv_libs.append("wechat_qrcode") or "" }}
+        {{ opencv_libs.append("xfeatures2d") or "" }}
+        {{ opencv_libs.append("ximgproc") or "" }}
+        {{ opencv_libs.append("xobjdetect") or "" }}
+        {{ opencv_libs.append("xphoto") or "" }}
+        {{ opencv_libs.append("freetype") or "" }}
+        - export MACOSX_DEPLOYMENT_TARGET={{ MACOSX_DEPLOYMENT_TARGET }}      # [osx]
+        - export CONDA_BUILD_SYSROOT={{ CONDA_BUILD_SYSROOT }}                # [osx]
+        - OPENCV_FLAGS=`pkg-config --cflags opencv4`                          # [unix]
+        - $CXX -std=c++11 $RECIPE_DIR/test.cpp ${OPENCV_FLAGS} -o test        # [unix]
+        - if [[ $(./test) != $PKG_VERSION ]]; then exit 1 ; fi                # [unix]
+        {% for each_opencv_lib in opencv_libs %}
+        - echo Testing for presence of {{ each_opencv_lib }}
+        - test -f $PREFIX/lib/libopencv_{{ each_opencv_lib }}${SHLIB_EXT}     # [unix]
+        - if not exist %PREFIX%\\Library\\bin\\opencv_{{ each_opencv_lib }}{{ win_ver_lib }}.dll exit 1  # [win]
+        - echo Found                   {{ each_opencv_lib }}
+        {% endfor %}
+        - test -f $PREFIX/lib/libopencv_bioinspired${SHLIB_EXT}  # [unix]
+        - test -f $PREFIX/lib/libopencv_hdf${SHLIB_EXT}          # [unix]
         - mkdir -p cmake_build_test && pushd cmake_build_test
         - cmake -G "Ninja" ..
         - cmake --build . --config Release
         - popd
-        # Verify dynamic libraries.
-        # "bioinspired", Not working in 3.1.0
-        {% set opencv_libs = [
-          "aruco",
-          "bgsegm",
-          "calib3d",
-          "ccalib",
-          "core",
-          "datasets",
-          "dpm",                               # [linux and x86_64]
-          "face",                              # [linux and x86_64]
-          "features2d",
-          "flann",
-          "fuzzy",
-          "highgui",
-          "imgcodecs",
-          "imgproc",
-          "line_descriptor",
-          "ml",
-          "objdetect",                        # [linux and x86_64]
-          "optflow",
-          "phase_unwrapping",
-          "photo",
-          "plot",
-          "reg",
-          "rgbd",
-          "saliency",
-          "shape",
-          "stereo",
-          "stitching",
-          "structured_light",
-          "superres",
-          "surface_matching",
-          "text",                             # [linux and x86_64]
-          "tracking",
-          "video",
-          "videoio",
-          "videostab",
-          "xfeatures2d",
-          "ximgproc",
-          "xobjdetect",                       # [linux and x86_64]
-          "xphoto",
-        ] %}
-        {% for each_opencv_lib in opencv_libs %}
-        - test -f ${CONDA_PREFIX}/lib/libopencv_{{ each_opencv_lib }}.dylib                        # [osx]
-        - test -f ${CONDA_PREFIX}/lib/libopencv_{{ each_opencv_lib }}.so                           # [linux]
-        - if not exist %CONDA_PREFIX%\\Library\\bin\\opencv_{{ each_opencv_lib }}{{ version|replace(".","") }}.dll exit 1 # [win]
-        {% endfor %}
 
-  {% if build_variant == "normal" %}
-  # This recipe has merged the outputs for the compiled libraries with the
-  # python bindings that used to be vendored as libopencv and py-opencv. This
-  # was done to try to improve maintainibility. The following two output
-  # sections provide no files other than those already in the opencv package.
-  # These "virtual" packages provide backwards compatibility with recipes
-  # depending on either of the two old packages.
+outputs:
   - name: libopencv
-    script: install-nothing.sh                  # [not win]
-    script: install-nothing.bat                 # [win]
-    version: {{ version }}
-    build:
-      number: {{ build_num }}
-      missing_dso_whitelist:     # [osx]
-        - "*"   # [osx]
-    run_exports:
-      # We are cautiously optimistic here that patch-level updates won't break
-      # ABI. However, it sounds like upstream won't guarantee *any* sort of
-      # binary compatibility any longer. See also
-      #
-      #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
-      #
-      - {{ pin_subpackage('libopencv', max_pin='x.x') }}
+  - name: opencv
     requirements:
       host:
-        - {{ package_name }} =={{ version }}
+        # Explicitely add a python requirement so that the hash changes between
+        # opencv    for pypy36 and python3.6
+        # similarly for pypy37 and python3.7
+        - python
+        # Similarly for libprotobuf since we are building a few different versions now
+        - libprotobuf
       run:
-        - {{ package_name }} =={{ version }}
+        - {{ pin_subpackage('libopencv', exact=True) }}
+        - {{ pin_subpackage('py-opencv', exact=True) }}
+    test:
+      commands:
+        - echo "tested in other outputs"
 
   - name: py-opencv
-    script: install-nothing.sh                  # [not win]
-    script: install-nothing.bat                 # [win]
-    version: {{ version }}
     build:
-      number: {{ build_num }}
-      missing_dso_whitelist:     # [osx]
-        - "*"   # [osx]
+      run_exports:
+        # Should we even have this???
+        # don't pin the python version so hard.
+        # Actually, I have found pretty good compatibility in the python
+        # package
+        - {{ pin_subpackage('py-opencv') }}
     requirements:
+      # There is no build script, but I just want it to think
+      # that it needs python and numpy at build time
       host:
         - python
-        - numpy {{ numpy }}
-        - {{ package_name }} =={{ version }}
+        - numpy
+        # Similarly for libprotobuf since we are building a few different versions now
+        - libprotobuf
       run:
         - python
         - {{ pin_compatible('numpy') }}
-        - {{ package_name }} =={{ version }}
-
+        - {{ pin_subpackage('libopencv', exact=True) }}
     test:
+      requires:
+        - pip
       imports:
         - cv2
         - cv2.xfeatures2d
         - cv2.freetype
       files:
         - run_py_test.py
+        - color_palette_alpha.png
+        - test_1_c1.jpg
+      source_files:
+        - test.avi
       commands:
         - python run_py_test.py
         - if [[ $($PYTHON -c 'import cv2; print(cv2.__version__)') != $PKG_VERSION ]]; then exit 1; fi  # [unix]
         - python -c "import cv2; assert 'Unknown' not in cv2.videoio_registry.getBackendName(cv2.CAP_V4L)"  # [linux]
+        - python -c "import cv2, re; assert re.search('Lapack:\s+YES', cv2.getBuildInformation())"
         - pip check
         - pip list
         - test $(pip list | grep opencv-python | wc -l) -eq 2  # [unix]
         - test $(pip list | grep opencv-python-headless | wc -l) -eq 1  # [unix]
       requires:
         - pip
-  {% endif %}
+
 
 about:
   home: https://opencv.org/
@@ -313,8 +277,18 @@ about:
   license_family: Apache
   license_file: LICENSE
   summary: Computer vision and machine learning software library.
-  description: |
-    OpenCV (Open Source Computer Vision Library) includes several hundreds of computer vision algorithms.
-    It has a modular structure,which means that the package includes several shared or static libraries.
-  doc_url: https://docs.opencv.org/
-  dev_url: https://github.com/opencv/opencv/
+  dev_url: https://github.com/opencv/opencv
+  doc_url: https://docs.opencv.org/{{ major_version }}.x/
+
+extra:
+  recipe-maintainers:
+    - h-vetinari
+    - xhochy
+    - jakirkham
+    - msarahan
+    - patricksnape
+    - zym1010
+    - hajapy
+    - ocefpaf
+    - hmaarrfk
+    - ilya-lavrenov
