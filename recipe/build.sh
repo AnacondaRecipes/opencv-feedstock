@@ -131,5 +131,5 @@ if [[ ! $? ]]; then
   exit 1
 fi
 
-cmake --build .
+cmake --build . -j%CPU_COUNT%
 
