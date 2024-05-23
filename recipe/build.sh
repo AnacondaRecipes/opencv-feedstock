@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # TODO: Remove it later after debugging
-#export LIBRARY_PATH="$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
+#export LIBRARY_PATH="$LIBRARY_PATH:/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/lib"
 
 DEBUG_CMAKE_BUILD_SYSTEM=yes
 declare -a CMAKE_DEBUG_ARGS PYTHON_CMAKE_ARGS VAR_DEPS DEPS_DEFAULTS CMAKE_EXTRA_ARGS
