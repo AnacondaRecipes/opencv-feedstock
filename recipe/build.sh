@@ -108,10 +108,14 @@ cmake .. -GNinja                                                     \
   -DINSTALL_PYTHON_EXAMPLES=ON                                            \
   -DOPENCV_EXTRA_MODULES_PATH="../opencv_contrib-${PKG_VERSION}/modules"  \
   -DOpenCV_INSTALL_BINARIES_PREFIX=""                                     \
-  -DPROTOBUF_UPDATE_FILES=ON          \
+  -DOPENCV_PYTHON_PIP_METADATA_INSTALL=ON                               \
+  -DOPENCV_PYTHON_PIP_METADATA_INSTALLER:STRING="conda"                 \
+  -DBUILD_opencv_python3=1                                              \
+  -DPYTHON3_EXECUTABLE=${PYTHON}  \
   -DPYTHON_DEFAULT_EXECUTABLE=${PREFIX}/bin/python                        \
   -DPYTHON3_PACKAGES_PATH=${SP_DIR}                                     \
   -DOPENCV_PYTHON3_INSTALL_PATH=${SP_DIR}  \
+  -DPROTOBUF_UPDATE_FILES=ON          \
   -DWITH_1394=OFF                                                         \
   -DWITH_CUDA=OFF                                                         \
   -DWITH_GTK=OFF                                                          \
