@@ -106,7 +106,7 @@ cmake .. -LAH -GNinja                                                     \
   -DPROTOBUF_UPDATE_FILES=ON          \
   -DPYTHON_DEFAULT_EXECUTABLE=${PREFIX}/bin/python                        \
   -DPYTHON3_PACKAGES_PATH=${SP_DIR}                                     \
-  -DOPENCV_PYTHON3_INSTALL_PATH=${SP_DIR}  
+  -DOPENCV_PYTHON3_INSTALL_PATH=${SP_DIR}  \
   -DWITH_1394=OFF                                                         \
   -DWITH_CUDA=OFF                                                         \
   -DWITH_GTK=OFF                                                          \

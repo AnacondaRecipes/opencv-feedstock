@@ -64,9 +64,7 @@ requirements:
     - gstreamer 1.14           # [not (win or ppc64le)]
     - gstreamer 1.18.5         # [win]
     - gst-plugins-base 1.18.5  # [win]
-    # harfbuzz, glib, gettext are both needed for freetype support
-    - gettext 0.21.0           # [not win]
-    - m2-gettext 0.19.7        # [win]
+    # harfbuzz, glib are both needed for freetype support
     - harfbuzz 4.3.0
     - hdf5 1.12.1
     - jasper 4.2.4             # [not s390x]
@@ -119,9 +117,7 @@ outputs:
         - gstreamer 1.14        # [not (win or ppc64le)]
         - gst-plugins-base 1.18.5  # [win]
         - gstreamer 1.18.5      # [win]
-        # harfbuzz, glib, gettext are both needed for freetype support
-        - gettext 0.21.0    # [not win]
-        - m2-gettext 0.19.7 # [win]
+        # harfbuzz, glib are both needed for freetype support
         - harfbuzz 4.3.0
         - hdf5 1.12.1
         - jasper 4.2.4            # [not s390x]
