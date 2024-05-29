@@ -50,11 +50,11 @@ elif [[ ${target_platform} == linux-64 ]];then
   WITH_PROTOBUF=1
   WITH_WEBP=1
   WITH_FFMPEG=1
-elif [[ ${target_platform} == linux-ppc64le ]];then
-    # TODO: this should likely be somewhere else... perhaps the compiler activation
-  CMAKE_ARGS=" -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH=$PREFIX;$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_INSTALL_LIBDIR=lib"
-  WITH_QT=0
-  WITH_GSTREAMER=0
+# elif [[ ${target_platform} == linux-ppc64le ]];then
+#     # TODO: this should likely be somewhere else... perhaps the compiler activation
+#   CMAKE_ARGS=" -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH=$PREFIX;$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_INSTALL_LIBDIR=lib"
+#   WITH_QT=0
+#   WITH_GSTREAMER=0
 elif [[ ${target_platform} == linux-aarch64 ]];then
     echo aarch64
 else
@@ -75,10 +75,10 @@ export PKG_CONFIG_LIBDIR=$PREFIX/lib
 
 mkdir -p build
 cd build
-cmake .. -GNinja                                                     \
-  ${CMAKE_ARGS}                                                           \
-  "${CMAKE_EXTRA_ARGS[@]}"  \
-  "${PYTHON_CMAKE_ARGS[@]}"                                               \
+cmake .. -GNinja                                                        \
+  ${CMAKE_ARGS}                                                         \
+  "${CMAKE_EXTRA_ARGS[@]}"                                              \
+  "${PYTHON_CMAKE_ARGS[@]}"                                             \
   -DCMAKE_BUILD_TYPE="Release"                                          \
   -DCMAKE_PREFIX_PATH=${PREFIX}                                         \
   -DCMAKE_INSTALL_PREFIX=${PREFIX}                                      \
@@ -95,32 +95,32 @@ cmake .. -GNinja                                                     \
   -DBUILD_PERF_TESTS=0                                                    \
   -DBUILD_PNG=0                                                           \
   -DBUILD_PROTOBUF=0                                                      \
+  -DPROTOBUF_UPDATE_FILES=ON                                              \
   -DBUILD_TESTS=0                                                         \
   -DBUILD_TIFF=0                                                          \
   -DBUILD_ZLIB=0                                                          \
   -DBUILD_WEBP=0                                                          \
-  -DBUILD_opencv_apps=OFF  \
-  -DCMAKE_CROSSCOMPILING=ON                        \
+  -DBUILD_opencv_apps=OFF                                                 \
+  -DCMAKE_CROSSCOMPILING=ON                                               \
   -DENABLE_CONFIG_VERIFICATION=ON                                         \
   -DENABLE_FLAKE8=0                                                       \
-  -DENABLE_PYLINT=0                     \
+  -DENABLE_PYLINT=0                                                       \
   -DINSTALL_C_EXAMPLES=OFF                                                \
   -DINSTALL_PYTHON_EXAMPLES=ON                                            \
   -DOPENCV_EXTRA_MODULES_PATH="../opencv_contrib-${PKG_VERSION}/modules"  \
   -DOpenCV_INSTALL_BINARIES_PREFIX=""                                     \
-  -DOPENCV_PYTHON_PIP_METADATA_INSTALL=ON                               \
-  -DOPENCV_PYTHON_PIP_METADATA_INSTALLER:STRING="conda"                 \
-  -DBUILD_opencv_python3=1                                              \
-  -DPYTHON3_EXECUTABLE=${PYTHON}  \
+  -DOPENCV_PYTHON_PIP_METADATA_INSTALL=ON                                 \
+  -DOPENCV_PYTHON_PIP_METADATA_INSTALLER:STRING="conda"                   \
+  -DBUILD_opencv_python3=1                                                \
+  -DPYTHON3_EXECUTABLE=${PYTHON}                                          \
   -DPYTHON_DEFAULT_EXECUTABLE=${PREFIX}/bin/python                        \
-  -DPYTHON3_PACKAGES_PATH=${SP_DIR}                                     \
-  -DOPENCV_PYTHON3_INSTALL_PATH=${SP_DIR}  \
-  -DPROTOBUF_UPDATE_FILES=ON          \
+  -DPYTHON3_PACKAGES_PATH=${SP_DIR}                                       \
+  -DOPENCV_PYTHON3_INSTALL_PATH=${SP_DIR}                                 \
   -DWITH_1394=OFF                                                         \
   -DWITH_CUDA=OFF                                                         \
   -DWITH_GTK=OFF                                                          \
   -DWITH_ITT=OFF                                                          \
-  -DWITH_JASPER=ON                                                       \
+  -DWITH_JASPER=ON                                                        \
   -DWITH_LAPACK=OFF                                                       \
   -DWITH_MATLAB=OFF                                                       \
   -DWITH_OPENCL=OFF                                                       \

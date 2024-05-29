@@ -49,6 +49,7 @@ requirements:
     - curl
     - unzip     # [not win]
     - 7zip      # [win]
+    - libprotobuf 4.25.3
     - ninja
     - pkg-config
     - m2-patch  # [win]
@@ -105,6 +106,7 @@ outputs:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - cmake
+        - libprotobuf 4.25.3
       host:
         - eigen 3.3.7
         - ffmpeg 4.2.2             # [not (linux and s390x)]
