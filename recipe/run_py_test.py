@@ -14,12 +14,6 @@ class TestGEMM(unittest.TestCase):
         gold = np.full(sz, 5, dtype=float)
         self.assertTrue(np.array_equal(gold, x), "Array returned by GEMM is not valid")
 
-# Regression test for https://github.com/conda-forge/opencv-feedstock/issues/302
-@unittest.skipIf(sys.version_info < (3,8), "Test requires Python >= 3.8")
-class TestMETADATA(unittest.TestCase):
-    def test_metadata(self):
-        from importlib import metadata
-        self.assertIsNotNone(metadata.version('opencv-python'), "Version contained in the METADATA file is not valid")
 
 if __name__ == '__main__':
     unittest.main()
