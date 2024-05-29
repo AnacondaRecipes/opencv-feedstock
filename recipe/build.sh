@@ -75,7 +75,7 @@ export PKG_CONFIG_LIBDIR=$PREFIX/lib
 
 mkdir -p build
 cd build
-cmake .. -LAH -GNinja                                                     \
+cmake .. -GNinja                                                     \
   ${CMAKE_ARGS}                                                           \
   "${CMAKE_EXTRA_ARGS[@]}"  \
   "${PYTHON_CMAKE_ARGS[@]}"                                               \
