@@ -79,6 +79,12 @@ cmake .. -GNinja                                                     \
   ${CMAKE_ARGS}                                                           \
   "${CMAKE_EXTRA_ARGS[@]}"  \
   "${PYTHON_CMAKE_ARGS[@]}"                                               \
+  -DCMAKE_BUILD_TYPE="Release"                                          \
+  -DCMAKE_PREFIX_PATH=${PREFIX}                                         \
+  -DCMAKE_INSTALL_PREFIX=${PREFIX}                                      \
+  -DCMAKE_INSTALL_LIBDIR="lib"                                          \
+  -DOPENCV_DOWNLOAD_TRIES=1\;2\;3\;4\;5                                 \
+  -DOPENCV_DOWNLOAD_PARAMS=INACTIVITY_TIMEOUT\;30\;TIMEOUT\;180\;SHOW_PROGRESS \
   -DOPENCV_GENERATE_PKGCONFIG=ON                                          \
   -DBUILD_DOCS=0                                                          \
   -DBUILD_JASPER=0                                                        \
@@ -94,7 +100,6 @@ cmake .. -GNinja                                                     \
   -DBUILD_ZLIB=0                                                          \
   -DBUILD_WEBP=0                                                          \
   -DBUILD_opencv_apps=OFF  \
-  -DCMAKE_BUILD_TYPE="Release"                                            \
   -DCMAKE_CROSSCOMPILING=ON                        \
   -DENABLE_CONFIG_VERIFICATION=ON                                         \
   -DENABLE_FLAKE8=0                                                       \
