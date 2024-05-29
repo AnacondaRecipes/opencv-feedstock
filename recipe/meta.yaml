@@ -83,82 +83,6 @@ requirements:
     - qtwebkit =5               # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
     - zlib 1.2.13
 
-test:
-  requires:
-    - {{ compiler('cxx') }}
-    - cmake
-    - numpy
-    - ninja
-    - {{ cdt('libselinux-devel') }}      # [linux]
-    - {{ cdt('libx11-devel') }}          # [linux and build_variant == 'normal']
-    - {{ cdt('libxau-devel') }}          # [linux]
-    - {{ cdt('libxcb') }}                # [linux]
-    - {{ cdt('libxdamage-devel') }}      # [linux]
-    - {{ cdt('libxext-devel') }}         # [linux]
-    - {{ cdt('libxfixes-devel') }}       # [linux]
-    - {{ cdt('libxi-devel') }}           # [linux]
-    - {{ cdt('libxrender-devel') }}      # [linux]
-    - {{ cdt('libxxf86vm') }}            # [linux]
-    - {{ cdt('mesa-dri-drivers') }}      # [linux]
-    - {{ cdt('mesa-libgl-devel') }}      # [linux]
-    - {{ cdt('xorg-x11-proto-devel') }}  # [linux and build_variant == 'normal']
-  files:
-    - CMakeLists.txt
-    - test.cpp
-  commands:
-    - mkdir -p cmake_build_test && pushd cmake_build_test
-    - cmake -G "Ninja" ..
-    - cmake --build . --config Release
-    - popd
-    # Verify dynamic libraries.
-    # "bioinspired", Not working in 3.1.0
-    {% set opencv_libs = [
-      "aruco",
-      "bgsegm",
-      "calib3d",
-      "ccalib",
-      "core",
-      "datasets",
-      "dpm",                               # [linux and x86_64]
-      "face",                              # [linux and x86_64]
-      "features2d",
-      "flann",
-      "fuzzy",
-      "highgui",
-      "imgcodecs",
-      "imgproc",
-      "line_descriptor",
-      "ml",
-      "objdetect",                        # [linux and x86_64]
-      "optflow",
-      "phase_unwrapping",
-      "photo",
-      "plot",
-      "reg",
-      "rgbd",
-      "saliency",
-      "shape",
-      "stereo",
-      "stitching",
-      "structured_light",
-      "superres",
-      "surface_matching",
-      "text",                             # [linux and x86_64]
-      "tracking",
-      "video",
-      "videoio",
-      "videostab",
-      "xfeatures2d",
-      "ximgproc",
-      "xobjdetect",                       # [linux and x86_64]
-      "xphoto",
-    ] %}
-    {% for each_opencv_lib in opencv_libs %}
-    - test -f ${CONDA_PREFIX}/lib/libopencv_{{ each_opencv_lib }}.dylib                        # [osx]
-    - test -f ${CONDA_PREFIX}/lib/libopencv_{{ each_opencv_lib }}.so                           # [linux]
-    - if not exist %CONDA_PREFIX%\\Library\\bin\\opencv_{{ each_opencv_lib }}{{ version|replace(".","") }}.dll exit 1 # [win]
-    {% endfor %}
-
 outputs:
   - name: {{ package_name }}
     script: install.sh                           # [not win]
@@ -176,6 +100,81 @@ outputs:
       - {{ pin_subpackage('opencv', max_pin='x.x') }} # [build_variant == 'normal']
       - {{ pin_subpackage('opencv-python-headless', max_pin='x.x') }} # [build_variant == 'headless']
 
+    test:
+      requires:
+        - {{ compiler('cxx') }}
+        - cmake
+        - numpy
+        - ninja
+        - {{ cdt('libselinux-devel') }}      # [linux]
+        - {{ cdt('libx11-devel') }}          # [linux and build_variant == 'normal']
+        - {{ cdt('libxau-devel') }}          # [linux]
+        - {{ cdt('libxcb') }}                # [linux]
+        - {{ cdt('libxdamage-devel') }}      # [linux]
+        - {{ cdt('libxext-devel') }}         # [linux]
+        - {{ cdt('libxfixes-devel') }}       # [linux]
+        - {{ cdt('libxi-devel') }}           # [linux]
+        - {{ cdt('libxrender-devel') }}      # [linux]
+        - {{ cdt('libxxf86vm') }}            # [linux]
+        - {{ cdt('mesa-dri-drivers') }}      # [linux]
+        - {{ cdt('mesa-libgl-devel') }}      # [linux]
+        - {{ cdt('xorg-x11-proto-devel') }}  # [linux and build_variant == 'normal']
+      files:
+        - CMakeLists.txt
+        - test.cpp
+      commands:
+        - mkdir -p cmake_build_test && pushd cmake_build_test
+        - cmake -G "Ninja" ..
+        - cmake --build . --config Release
+        - popd
+        # Verify dynamic libraries.
+        # "bioinspired", Not working in 3.1.0
+        {% set opencv_libs = [
+          "aruco",
+          "bgsegm",
+          "calib3d",
+          "ccalib",
+          "core",
+          "datasets",
+          "dpm",                               # [linux and x86_64]
+          "face",                              # [linux and x86_64]
+          "features2d",
+          "flann",
+          "fuzzy",
+          "highgui",
+          "imgcodecs",
+          "imgproc",
+          "line_descriptor",
+          "ml",
+          "objdetect",                        # [linux and x86_64]
+          "optflow",
+          "phase_unwrapping",
+          "photo",
+          "plot",
+          "reg",
+          "rgbd",
+          "saliency",
+          "shape",
+          "stereo",
+          "stitching",
+          "structured_light",
+          "superres",
+          "surface_matching",
+          "text",                             # [linux and x86_64]
+          "tracking",
+          "video",
+          "videoio",
+          "videostab",
+          "xfeatures2d",
+          "ximgproc",
+          "xobjdetect",                       # [linux and x86_64]
+          "xphoto",
+        ] %}
+        {% for each_opencv_lib in opencv_libs %}
+        - test -f ${CONDA_PREFIX}/lib/libopencv_{{ each_opencv_lib }}.dylib                        # [osx]
+        - test -f ${CONDA_PREFIX}/lib/libopencv_{{ each_opencv_lib }}.so                           # [linux]
+        - if not exist %CONDA_PREFIX%\\Library\\bin\\opencv_{{ each_opencv_lib }}{{ version|replace(".","") }}.dll exit 1 # [win]
+        {% endfor %}
 
   {% if build_variant == "normal" %}
   # This recipe has merged the outputs for the compiled libraries with the
