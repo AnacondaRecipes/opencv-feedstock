@@ -101,6 +101,10 @@ outputs:
       - {{ pin_subpackage('opencv-python-headless', max_pin='x.x') }} # [build_variant == 'headless']
 
     requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+        - cmake
       host:
         - eigen 3.3.7
         - ffmpeg 4.2.2             # [not (linux and s390x)]
