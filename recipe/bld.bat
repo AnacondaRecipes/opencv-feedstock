@@ -19,6 +19,10 @@ else (
   set WITH_QT=0
 )
 
+:: Workaround for building LAPACK headers with C++17
+:: see https://github.com/conda-forge/opencv-feedstock/pull/363#issuecomment-1604972688
+set "CXXFLAGS=%CXXFLAGS% -D_CRT_USE_C_COMPLEX_H"
+
 :: FFMPEG building requires pkgconfig
 set PKG_CONFIG_PATH="%LIBRARY_BIN%\pkgconfig;%LIBRARY_LIB%\pkgconfig;%LIBRARY_PREFIX%\share\pkgconfig;%BUILD_PREFIX%\Library\lib\pkgconfig;%BUILD_PREFIX%\Library\bin\pkgconfig"
 set PKG_CONFIG_EXECUTABLE=%LIBRARY_BIN%\pkg-config
@@ -39,7 +43,15 @@ rem directory in the build directory to see what has been vendored by the
 rem opencv build
 
 
-cmake .. -LAH %CMAKE_ARGS% -G Ninja             ^
+cmake .. %CMAKE_ARGS% -G Ninja             ^
+    -DCMAKE_CXX_STANDARD=17                  ^
+    -DCMAKE_BUILD_TYPE="Release"   ^
+    -DCMAKE_FIND_ROOT_PATH=%PREFIX%;%BUILD_PREFIX%  ^
+    -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%         ^
+    -DCMAKE_SYSTEM_PREFIX_PATH=%LIBRARY_PREFIX%     ^
+    -DOPENCV_DOWNLOAD_PARAMS=INACTIVITY_TIMEOUT;30;TIMEOUT;180;SHOW_PROGRESS  ^
+    -DOPENCV_DOWNLOAD_TRIES=1;2;3;4;5               ^
+    -DENABLE_CONFIG_VERIFICATION=ON                 ^
     -DOPENCV_GENERATE_PKGCONFIG=ON ^
     -DBUILD_DOCS=0                 ^
     -DBUILD_IPP_IW=0               ^
@@ -61,17 +73,10 @@ cmake .. -LAH %CMAKE_ARGS% -G Ninja             ^
     -DBUILD_opencv_bioinspired=0   ^
     -DBUILD_opencv_python2=0       ^
     -DBUILD_opencv_python3=1       ^
-    -DCMAKE_BUILD_TYPE="Release"   ^
-    -DCMAKE_FIND_ROOT_PATH=%PREFIX%;%BUILD_PREFIX%  ^
-    -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%         ^
-    -DCMAKE_SYSTEM_PREFIX_PATH=%LIBRARY_PREFIX%     ^
-    -DENABLE_CONFIG_VERIFICATION=ON                 ^
     -DENABLE_PRECOMPILED_HEADERS=OFF                ^
     -DINSTALL_C_EXAMPLES=0                          ^
     -DOPENCV_BIN_INSTALL_PATH=bin                   ^
-    -DOPENCV_CONFIG_INSTALL_PATH="lib/cmake/"       ^
-    -DOPENCV_DOWNLOAD_PARAMS=INACTIVITY_TIMEOUT;30;TIMEOUT;180;SHOW_PROGRESS  ^
-    -DOPENCV_DOWNLOAD_TRIES=1;2;3;4;5               ^
+    -DOPENCV_CONFIG_INSTALL_PATH="cmake"       ^
     -DOPENCV_EXTRA_MODULES_PATH=%SRC_DIR%/opencv_contrib-%PKG_VERSION%/modules      ^
     -DOPENCV_GENERATE_SETUPVARS=OFF                 ^
     -DOPENCV_INSTALL_BINARIES_PREFIX="opencv"       ^
@@ -79,6 +84,7 @@ cmake .. -LAH %CMAKE_ARGS% -G Ninja             ^
     -DOPENCV_LIB_INSTALL_PATH=lib                   ^
     -DOPENCV_ENABLE_PKG_CONFIG=1                                                    ^
     -DOPENCV_PYTHON2_INSTALL_PATH=""                ^
+    -DPYTHON3_PACKAGES_PATH=%SP_DIR%          ^
     -DOPENCV_PYTHON3_INSTALL_PATH=%SP_DIR%          ^
     -DOPENCV_SKIP_PYTHON_LOADER=1                   ^
     -DOPENCV_PYTHON_PIP_METADATA_INSTALL=ON                                         ^
