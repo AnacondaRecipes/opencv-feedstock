@@ -122,7 +122,7 @@ cmake .. -GNinja                                                        \
   -DWITH_CUDA=OFF                                                         \
   -DWITH_GTK=OFF                                                          \
   -DWITH_ITT=OFF                                                          \
-  -DWITH_JASPER=ON                                                        \
+  -DWITH_JASPER=OFF                                                        \
   -DJASPER_INCLUDE_DIR=${PREFIX}/include \
   -DWITH_LAPACK=OFF                                                       \
   -DWITH_MATLAB=OFF                                                       \
