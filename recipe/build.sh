@@ -124,6 +124,7 @@ cmake .. -GNinja                                                        \
   -DWITH_GTK=OFF                                                          \
   -DWITH_ITT=OFF                                                          \
   -DWITH_JASPER=ON                                                        \
+  -DJASPER_INCLUDE_DIR=include \
   -DWITH_LAPACK=OFF                                                       \
   -DWITH_MATLAB=OFF                                                       \
   -DWITH_OPENCL=OFF                                                       \
