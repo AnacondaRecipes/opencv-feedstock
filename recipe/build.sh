@@ -52,13 +52,12 @@ elif [[ ${target_platform} == linux-64 ]];then
   WITH_PROTOBUF=1
   WITH_WEBP=1
   WITH_FFMPEG=1
-# elif [[ ${target_platform} == linux-ppc64le ]];then
-#     # TODO: this should likely be somewhere else... perhaps the compiler activation
-#   CMAKE_ARGS=" -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH=$PREFIX;$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_INSTALL_LIBDIR=lib"
-#   WITH_QT=0
-#   WITH_GSTREAMER=0
+  
+  # Set explicitly where to find the Jasper library (optimized).
+  CMAKE_EXTRA_ARGS+=("-DJASPER_LIBRARY_RELEASE=${PREFIX}/lib/libjasper.so")
 elif [[ ${target_platform} == linux-aarch64 ]];then
     echo aarch64
+    CMAKE_EXTRA_ARGS+=("-DJASPER_LIBRARY_RELEASE=${PREFIX}/lib/libjasper.so")
 else
     echo Unsupported platform
 fi
@@ -124,7 +123,7 @@ cmake .. -GNinja                                                        \
   -DWITH_GTK=OFF                                                          \
   -DWITH_ITT=OFF                                                          \
   -DWITH_JASPER=ON                                                        \
-  -DJASPER_INCLUDE_DIR=include \
+  -DJASPER_INCLUDE_DIR=${PREFIX}/include \
   -DWITH_LAPACK=OFF                                                       \
   -DWITH_MATLAB=OFF                                                       \
   -DWITH_OPENCL=OFF                                                       \
