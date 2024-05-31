@@ -57,7 +57,6 @@ requirements:
     - {{ cdt('mesa-libGL-devel') }}  # [linux]
     - {{ cdt('mesa-libEGL-devel') }}  # [linux and not ppc64le]
   host:
-    - blas=*=openblas  # [osx and x86_64]
     - eigen 3.3.7
     - ffmpeg 4.2.2             # [not (linux and s390x)]
     - freetype 2.12
@@ -109,7 +108,6 @@ outputs:
         - cmake
         - libprotobuf 4.25.3
       host:
-        - blas=*=openblas  # [osx and x86_64]
         - eigen 3.3.7
         - ffmpeg 4.2.2             # [not (linux and s390x)]
         - freetype 2.12
@@ -137,7 +135,6 @@ outputs:
         - qtwebkit =5               # [not (linux and (s390x or ppc64le)) and build_variant == 'normal']
         - zlib 1.2.13
       run:
-        - blas=*=openblas  # [osx and x86_64]
         - _openmp_mutex         # [linux]
         - eigen >=3.3.7
         - ffmpeg >=4.2.2,<4.3.0a0        # [not (linux and s390x)]
@@ -286,11 +283,13 @@ outputs:
         - "*"   # [osx]
     requirements:
       host:
+        - blas=*=openblas    # [osx and x86_64]
         - python
         - numpy {{ numpy }}
         - libprotobuf 4.25.3
         - {{ package_name }} =={{ version }}
       run:
+        - blas=*=openblas    # [osx and x86_64]
         - python
         - {{ pin_compatible('numpy') }}
         - {{ pin_subpackage('opencv', exact=True) }}
