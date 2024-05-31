@@ -54,10 +54,10 @@ elif [[ ${target_platform} == linux-64 ]];then
   WITH_FFMPEG=1
   
   # Set explicitly where to find the Jasper library (optimized).
-  CMAKE_EXTRA_ARGS+=("-DJASPER_LIBRARY_RELEASE=${PREFIX}/lib/libjasper.so")
+  CMAKE_ARGS="${CMAKE_ARGS} -DJASPER_LIBRARY_RELEASE=${PREFIX}/lib/libjasper.so"
 elif [[ ${target_platform} == linux-aarch64 ]];then
     echo aarch64
-    CMAKE_EXTRA_ARGS+=("-DJASPER_LIBRARY_RELEASE=${PREFIX}/lib/libjasper.so")
+    CMAKE_ARGS="${CMAKE_ARGS} -DJASPER_LIBRARY_RELEASE=${PREFIX}/lib/libjasper.so"
 else
     echo Unsupported platform
 fi
