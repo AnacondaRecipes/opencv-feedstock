@@ -3,11 +3,6 @@
 DEBUG_CMAKE_BUILD_SYSTEM=yes
 declare -a CMAKE_DEBUG_ARGS PYTHON_CMAKE_ARGS VAR_DEPS DEPS_DEFAULTS CMAKE_EXTRA_ARGS
 
-# C11 should be what is supported by default
-
-export CPPFLAGS="${CPPFLAGS//-std=c++17/-std=c++11}"
-export CXXFLAGS="${CXXFLAGS//-std=c++17/-std=c++11}"
-
 if [[ ${DEBUG_CMAKE_BUILD_SYSTEM} == yes ]]; then
 #  CMAKE_DEBUG_ARGS+=("--debug-trycompile")
 #  CMAKE_DEBUG_ARGS+=("-Wdev")
@@ -86,6 +81,7 @@ cmake .. -GNinja                                                        \
   ${CMAKE_ARGS}                                                         \
   "${CMAKE_EXTRA_ARGS[@]}"                                              \
   "${PYTHON_CMAKE_ARGS[@]}"                                             \
+  -DCMAKE_CXX_STANDARD=17                                               \
   -DCMAKE_BUILD_TYPE="Release"                                          \
   -DCMAKE_PREFIX_PATH=${PREFIX}                                         \
   -DCMAKE_INSTALL_PREFIX=${PREFIX}                                      \
