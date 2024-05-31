@@ -4,7 +4,7 @@ DEBUG_CMAKE_BUILD_SYSTEM=yes
 declare -a CMAKE_DEBUG_ARGS PYTHON_CMAKE_ARGS VAR_DEPS DEPS_DEFAULTS CMAKE_EXTRA_ARGS
 
 # C11 should be what is supported by default
-export CXXFLAGS="$CXXFLAGS -D__STDC_CONSTANT_MACROS"
+
 export CPPFLAGS="${CPPFLAGS//-std=c++17/-std=c++11}"
 export CXXFLAGS="${CXXFLAGS//-std=c++17/-std=c++11}"
 
@@ -18,6 +18,11 @@ fi
 
 echo "PYTHON_CMAKE_ARGS="
 echo "${PYTHON_CMAKE_ARGS[@]}"
+
+if [[ "${target_platform}" != "${build_platform}" ]]; then
+  # enabling explicitly the use of an external Protobuf, see https://github.com/conda-forge/opencv-feedstock/pull/269
+  CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc"
+fi
 
 # Set defaults for dependencies that change across OSes
 # This should match the meta.yaml deps section
@@ -45,6 +50,8 @@ if [[ ${target_platform} == osx-* ]]; then
     WITH_OPENJPEG=0
   fi
 elif [[ ${target_platform} == linux-64 ]];then
+  # pkgconfig for FFMPEG building FFMPEG test needs __STDC_CONSTANT_MACROS enabled.
+  export CXXFLAGS="$CXXFLAGS -D__STDC_CONSTANT_MACROS"
   # for qt the value is coerced to boolean but it also used to set the version
   # of the QT cmake config file looked for
   WITH_PROTOBUF=1
