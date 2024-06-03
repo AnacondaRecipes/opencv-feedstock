@@ -285,15 +285,15 @@ outputs:
         - "*"   # [osx]
     requirements:
       host:
-        # 2024/5/31: py-opencv's host environemnt tries to pick up mkl variant and fails.
+        # 2024/5/31: py-opencv's host environemnt tries to pick up mkl variant and fails on osx-64 and linux-64.
         # Using blas=*=openblas solves the issue.
-        - blas=*=openblas    # [osx and x86_64]
+        - blas=*=openblas    # [(linux or osx) and x86_64]
         - python
         - numpy {{ numpy }}
         - libprotobuf 4.25.3
         - {{ package_name }} =={{ version }}
       run:
-        - blas=*=openblas    # [osx and x86_64]
+        - blas=*=openblas    # [(linux or osx) and x86_64]
         - python
         - {{ pin_compatible('numpy') }}
         - {{ pin_subpackage('opencv', exact=True) }}
