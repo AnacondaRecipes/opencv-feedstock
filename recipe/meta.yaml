@@ -186,7 +186,8 @@ outputs:
         - test.cpp
       commands:
         - mkdir -p cmake_build_test && pushd cmake_build_test
-        - cmake -G "Ninja" .. -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE="Release" -DCMAKE_FIND_ROOT_PATH=%PREFIX% -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% -DCMAKE_SYSTEM_PREFIX_PATH=%LIBRARY_PREFIX%
+        - cmake -G "Ninja" ..  # [unix]
+        - cmake -G "Ninja" .. -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE="Release" -DCMAKE_FIND_ROOT_PATH=%PREFIX% -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% -DCMAKE_SYSTEM_PREFIX_PATH=%LIBRARY_PREFIX%  # [win]
         - cmake --build . --config Release
         - popd
         # Verify dynamic libraries.
