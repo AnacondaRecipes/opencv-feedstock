@@ -314,7 +314,7 @@ outputs:
       #  - python run_py_test.py
         - if [[ $($PYTHON -c 'import cv2; print(cv2.__version__)') != $PKG_VERSION ]]; then exit 1; fi  # [unix]
         - python -c "import cv2; assert 'Unknown' not in cv2.videoio_registry.getBackendName(cv2.CAP_V4L)"  # [linux]
-        - dir /s
+        - dir /s  # [win]
         - pip check
         - pip list
         - test $(pip list | grep \bopencv-python\b | wc -l) -eq 1  # [unix]
