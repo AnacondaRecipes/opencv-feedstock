@@ -107,9 +107,9 @@ outputs:
       build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
-        - cmake
         - libprotobuf 4.25.3
       host:
+        - cmake
         - eigen 3.3.7
         - ffmpeg 4.2.2             # [not (linux and s390x)]
         - freetype 2.12
@@ -169,6 +169,7 @@ outputs:
 
     test:
       requires:
+        - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - cmake
         - numpy
@@ -190,7 +191,9 @@ outputs:
         - CMakeLists.txt
         - test.cpp
       commands:
+        - if not exist %LIBRARY_PREFIX%\cmake\x64\vc16\lib\OpenCVModules.cmake (exit 1)         # [win]
         - mkdir -p cmake_build_test && pushd cmake_build_test
+        - dir /s %LIBRARY_PREFIX%\cmake  # [win]
         - cmake -G "Ninja" ..
         - cmake --build . --config Release
         - popd
@@ -313,8 +316,8 @@ outputs:
         - python -c "import cv2; assert 'Unknown' not in cv2.videoio_registry.getBackendName(cv2.CAP_V4L)"  # [linux]
         - pip check
         - pip list
-        # - test $(pip list | grep opencv-python | wc -l) -eq 2  # [unix]
-        # - test $(pip list | grep opencv-python-headless | wc -l) -eq 1  # [unix]
+        - test $(pip list | grep opencv-python | wc -l) -eq 2  # [unix]
+        - test $(pip list | grep opencv-python-headless | wc -l) -eq 1  # [unix]
       requires:
         - pip
   {% endif %}

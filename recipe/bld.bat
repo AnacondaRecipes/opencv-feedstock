@@ -1,5 +1,9 @@
 @echo ON
 setlocal EnableDelayedExpansion
+
+:: cmd
+echo "Building %PKG_NAME%."
+
 md build
 pushd build
 
@@ -42,14 +46,17 @@ rem will likely result in an overdepending error). Check the 3rdparty libraries
 rem directory in the build directory to see what has been vendored by the
 rem opencv build
 
-
-cmake .. %CMAKE_ARGS% -G Ninja             ^
+:: Generate the build files.
+echo "Generating the build files..."
+cmake -L .. %CMAKE_ARGS% -G Ninja             ^
     -DCMAKE_CXX_STANDARD=17                  ^
     -DCMAKE_BUILD_TYPE="Release"   ^
-    -DCMAKE_FIND_ROOT_PATH=%PREFIX%  ^
     -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%  ^
     -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%         ^
     -DCMAKE_SYSTEM_PREFIX_PATH=%LIBRARY_PREFIX%     ^
+    -DOPENCV_CONFIG_INSTALL_PATH="cmake"       ^
+    -DOPENCV_BIN_INSTALL_PATH=bin                   ^
+    -DOPENCV_LIB_INSTALL_PATH=lib                   ^
     -DOPENCV_DOWNLOAD_PARAMS=INACTIVITY_TIMEOUT;30;TIMEOUT;180;SHOW_PROGRESS  ^
     -DOPENCV_DOWNLOAD_TRIES=1;2;3;4;5               ^
     -DENABLE_CONFIG_VERIFICATION=ON                 ^
@@ -76,13 +83,8 @@ cmake .. %CMAKE_ARGS% -G Ninja             ^
     -DBUILD_opencv_python3=1       ^
     -DENABLE_PRECOMPILED_HEADERS=OFF                ^
     -DINSTALL_C_EXAMPLES=0                          ^
-    -DOPENCV_BIN_INSTALL_PATH=bin                   ^
-    -DOPENCV_CONFIG_INSTALL_PATH="cmake"       ^
-    -DOPENCV_EXTRA_MODULES_PATH=%SRC_DIR%/opencv_contrib-%PKG_VERSION%/modules      ^
+    -DOPENCV_EXTRA_MODULES_PATH=%SRC_DIR%\opencv_contrib-%PKG_VERSION%\modules      ^
     -DOPENCV_GENERATE_SETUPVARS=OFF                 ^
-    -DOPENCV_INSTALL_BINARIES_PREFIX="opencv"       ^
-    -DOPENCV_INSTALL_BINARIES_SUFFIX=""             ^
-    -DOPENCV_LIB_INSTALL_PATH=lib                   ^
     -DOPENCV_ENABLE_PKG_CONFIG=1                                                    ^
     -DOPENCV_PYTHON2_INSTALL_PATH=""                ^
     -DPYTHON3_PACKAGES_PATH=%SP_DIR%          ^
@@ -91,10 +93,10 @@ cmake .. %CMAKE_ARGS% -G Ninja             ^
     -DOPENCV_PYTHON_PIP_METADATA_INSTALL=ON                                         ^
     -DOPENCV_PYTHON_PIP_METADATA_INSTALLER:STRING="conda"                           ^
     -DPROTOBUF_UPDATE_FILES=1                       ^
-    -DPYTHON3_EXECUTABLE=%PREFIX%/python.exe        ^
-    -DPYTHON_DEFAULT_EXECUTABLE=%PREFIX%/python.exe ^
-    -DWEBP_LIBRARY=%PREFIX%/Library/lib/libwebp.lib ^
-    -DWEBP_INCLUDE_DIR=%PREFIX%/Library/include     ^
+    -DPYTHON3_EXECUTABLE=%PREFIX%\python.exe        ^
+    -DPYTHON_DEFAULT_EXECUTABLE=%PREFIX%\python.exe ^
+    -DWEBP_LIBRARY=%LIBRARY_LIB%\libwebp.lib ^
+    -DWEBP_INCLUDE_DIR=%LIBRARY_INC%     ^
     -DWITH_1394=0                                   ^
     -DWITH_CUDA=0                                   ^
     -DWITH_DIRECTX=0                                ^
@@ -124,7 +126,12 @@ cmake .. %CMAKE_ARGS% -G Ninja             ^
 
 if %ERRORLEVEL% neq 0 (type CMakeError.log && exit 1)
 
-cmake --build . --target install --config Release -j%CPU_COUNT%
+cmake --build . -j%CPU_COUNT%
 if %ERRORLEVEL% neq 0 exit 1
 
+echo cmake --build . ok
+echo exiting the lot OK.
+
+:: Error free exit.
+echo "Error free exit!"
 exit /b 0
