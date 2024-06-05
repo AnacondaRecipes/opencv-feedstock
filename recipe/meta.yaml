@@ -317,8 +317,8 @@ outputs:
         - dir /s  # [win]
         - pip check
         - pip list
-        - test $(pip list | grep opencv-python | wc -l) -eq 1  # [unix and build_variant == "normal"]
-        - test $(pip list | grep opencv-python-headless | wc -l) -eq 1  # [unix build_variant == "headless"]
+        - test $(pip list | grep opencv-python | wc -l) -eq 1           # [unix and build_variant == 'normal']
+        - test $(pip list | grep opencv-python-headless | wc -l) -eq 1  # [unix and build_variant == 'headless']
       requires:
         - pip
   {% endif %}
