@@ -41,8 +41,10 @@ if [[ ${target_platform} == osx-* ]]; then
   CMAKE_EXTRA_ARGS+=("-DCMAKE_OSX_SYSROOT=${CONDA_BUILD_SYSROOT}")
   CMAKE_EXTRA_ARGS+=("-DZLIB_LIBRARY_RELEASE=${PREFIX}/lib/libz.dylib")
   WITH_OPENMP=0
+  CMAKE_ARGS="${CMAKE_ARGS} -DWITH_JASPER=0"
   if [[ ${target_platform} == osx-arm64 ]]; then
     WITH_OPENJPEG=0
+    CMAKE_ARGS="${CMAKE_ARGS} -DWITH_JASPER=ON -DWITH_OPENJPEG=OFF"
   fi
 elif [[ ${target_platform} == linux-64 ]];then
   # pkgconfig for FFMPEG building FFMPEG test needs __STDC_CONSTANT_MACROS enabled.
@@ -52,12 +54,13 @@ elif [[ ${target_platform} == linux-64 ]];then
   WITH_PROTOBUF=1
   WITH_WEBP=1
   WITH_FFMPEG=1
+  CMAKE_ARGS="${CMAKE_ARGS} -DWITH_JASPER=OFF"
   
   # Set explicitly where to find the Jasper library (optimized).
   CMAKE_ARGS="${CMAKE_ARGS} -DJASPER_LIBRARY_RELEASE=${PREFIX}/lib/libjasper.so"
 elif [[ ${target_platform} == linux-aarch64 ]];then
     echo aarch64
-    CMAKE_ARGS="${CMAKE_ARGS} -DJASPER_LIBRARY_RELEASE=${PREFIX}/lib/libjasper.so"
+    CMAKE_ARGS="${CMAKE_ARGS} -DWITH_JASPER=OFF"
 else
     echo Unsupported platform
 fi
@@ -122,7 +125,6 @@ cmake .. -GNinja                                                        \
   -DWITH_CUDA=OFF                                                         \
   -DWITH_GTK=OFF                                                          \
   -DWITH_ITT=OFF                                                          \
-  -DWITH_JASPER=OFF                                                        \
   -DJASPER_INCLUDE_DIR=${PREFIX}/include \
   -DWITH_LAPACK=OFF                                                       \
   -DWITH_MATLAB=OFF                                                       \
