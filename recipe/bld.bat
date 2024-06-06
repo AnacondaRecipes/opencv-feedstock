@@ -51,6 +51,7 @@ echo "Generating the build files..."
 cmake -L .. %CMAKE_ARGS% -G Ninja             ^
     -DCMAKE_CXX_STANDARD=17                  ^
     -DCMAKE_BUILD_TYPE="Release"   ^
+    -DCMAKE_FIND_ROOT_PATH=%PREFIX%;%BUILD_PREFIX%  ^
     -DCMAKE_PREFIX_PATH=%LIBRARY_PREFIX%  ^
     -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%         ^
     -DCMAKE_SYSTEM_PREFIX_PATH=%LIBRARY_PREFIX%     ^
