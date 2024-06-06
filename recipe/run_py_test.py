@@ -1,7 +1,16 @@
 import unittest
 import numpy as np
 import cv2
-import sys
+
+
+class TestImageRead(unittest.TestCase):
+    def test_load_image_png(self):
+        im = cv2.imread('color_palette_alpha.png')
+        self.assertIsNotNone(im, "Cannot read png image from file")
+
+    def test_load_image_jpg(self):
+        im = cv2.imread('test_1_c1.jpg')
+        self.assertIsNotNone(im, "Cannot read jpg image from file")
 
 
 class TestGEMM(unittest.TestCase):
