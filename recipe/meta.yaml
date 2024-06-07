@@ -257,11 +257,11 @@ outputs:
           "freetype",
         ] %}
         {% for each_opencv_lib in opencv_libs %}
-        - echo Testing for presence of {{ each_opencv_lib }}
+        - echo Testing for presence of {{ each_opencv_lib }}  # [unix]
         - test -f ${CONDA_PREFIX}/lib/libopencv_{{ each_opencv_lib }}.dylib                        # [osx]
         - test -f ${CONDA_PREFIX}/lib/libopencv_{{ each_opencv_lib }}.so                           # [linux]
         - if not exist %CONDA_PREFIX%\\Library\\bin\\opencv_{{ each_opencv_lib }}{{ version|replace(".","") }}.dll exit 1 # [win]
-        - echo Found                   {{ each_opencv_lib }}
+        - echo Found                   {{ each_opencv_lib }}  # [unix]
         {% endfor %}
 
   {% if build_variant == "normal" %}
@@ -290,11 +290,11 @@ outputs:
     requirements:
       host:
         - python
-        - {{ package_name }} =={{ version }}
+        - {{ pin_subpackage('opencv', exact=True) }}
         - libprotobuf 4.25.3
       run:
         - python
-        - {{ package_name }} =={{ version }}
+        - {{ pin_subpackage('opencv', exact=True) }}
     test:
       commands:
         - echo "tested in other outputs"
@@ -315,7 +315,7 @@ outputs:
         - python
         - numpy {{ numpy }}
         - libprotobuf 4.25.3
-        - {{ package_name }} =={{ version }}
+        - {{ pin_subpackage('opencv', exact=True) }}
       run:
         - blas=*=openblas    # [(linux or osx) and x86_64]
         - python
