@@ -60,6 +60,8 @@ source:
 
 build:
   number: {{ build }}
+  # Package not supported on s390x
+  skip: true  # [s390x]
   string: headless_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}            # [qt_version == "none"]
   string: qt{{ qt_version }}_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [qt_version != "none"]
   run_exports:
@@ -81,13 +83,20 @@ requirements:
     # - llvm-openmp                    # [osx]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - {{ cdt('libselinux') }}        # [linux]
+    - {{ cdt('libxau-devel') }}      # [linux]
+    - {{ cdt('libxcb') }}            # [linux]
+    - {{ cdt('libxdamage') }}        # [linux]
+    - {{ cdt('libxdamage-devel') }}  # [linux]
+    - {{ cdt('libxext-devel') }}     # [linux]
+    - {{ cdt('libxfixes') }}         # [linux]
+    - {{ cdt('libxfixes-devel') }}   # [linux]
+    - {{ cdt('libxi-devel') }}       # [linux]
+    - {{ cdt('libxrender-devel') }}  # [linux]
+    - {{ cdt('libxxf86vm') }}        # [linux]
     - {{ cdt('mesa-libgl-devel') }}  # [linux]
     - {{ cdt('mesa-libegl-devel') }}  # [linux]
     - {{ cdt('mesa-dri-drivers') }}  # [linux]
-    - {{ cdt('libselinux') }}        # [linux]
-    - {{ cdt('libxdamage') }}        # [linux]
-    - {{ cdt('libxfixes') }}         # [linux]
-    - {{ cdt('libxxf86vm') }}        # [linux]
   host:
     - python
     - numpy
