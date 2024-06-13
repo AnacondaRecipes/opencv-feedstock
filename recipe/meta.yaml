@@ -114,7 +114,7 @@ requirements:
     - libiconv                 # [unix]
     - openblas-devel 0.3.21    # [x86_64 and not win]
     - libpng 1.6.39
-    - libprotobuf 4.25.3
+    - libprotobuf
     # to support protobuf >=22 and c++17
     - libabseil 20240116.2
     - libtiff 4.5
