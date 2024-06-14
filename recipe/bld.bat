@@ -73,10 +73,8 @@ cmake -L .. %CMAKE_ARGS% -G Ninja             ^
     -DBUILD_PNG=0                  ^
     -DBUILD_PROTOBUF=0             ^
     -DBUILD_SHARED_LIBS=ON         ^
-    -DBUILD_TBB=0                  ^
     -DBUILD_TESTS=0                ^
     -DBUILD_TIFF=0                 ^
-    -DBUILD_WEBP=0                 ^
     -DBUILD_WITH_STATIC_CRT=0      ^
     -DBUILD_ZLIB=0                 ^
     -DBUILD_opencv_bioinspired=0   ^
@@ -103,8 +101,6 @@ cmake -L .. %CMAKE_ARGS% -G Ninja             ^
     -DWITH_DIRECTX=0                                ^
     -DWITH_EIGEN=1                                  ^
     -DWITH_FFMPEG=0                                 ^
-    -DWITH_FREETYPE=1                               ^
-    -DWITH_GSTREAMER=1                              ^
     -DWITH_GTK=0                                    ^
     -DWITH_HDF5=1                                   ^
     -DWITH_JASPER=1                                 ^
@@ -118,11 +114,9 @@ cmake -L .. %CMAKE_ARGS% -G Ninja             ^
     -DWITH_OPENNI=0                                 ^
     -DWITH_PROTOBUF=1                               ^
     %WITH_QT%                                       ^
-    -DWITH_ZLIB=1 -DWITH_PNG=1 -DWITH_TIFF=1 -DWITH_TBB=0      ^
     -DWITH_TENGINE=0                                ^
     -DWITH_TESSERACT=0                              ^
     -DWITH_VTK=0                                    ^
-    -DWITH_WEBP=1                                   ^
     -DWITH_WIN32UI=0
 
 if %ERRORLEVEL% neq 0 (type CMakeError.log && exit 1)
