@@ -12,6 +12,10 @@ if "%PY3K%" == "0" (
 mkdir build
 cd build
 
+@REM if "%build_variant%" == "normal" (
+@REM   echo "Building normal variant"
+@REM   set QT_VERSION=5
+
 if "%qt_version%"=="5" set WITH_QT="-DWITH_QT=5"
 if "%qt_version%"=="6" set WITH_QT="-DWITH_QT=6"
 if "%qt_version%"=="none" set WITH_QT="-DWITH_QT=0"

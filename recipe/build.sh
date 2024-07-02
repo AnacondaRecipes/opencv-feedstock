@@ -14,12 +14,19 @@ if [[ "${target_platform}" == linux-* ]]; then
     OPENMP="-DWITH_OPENMP=1"
 fi
 
-if [[ "$qt_version" == "5" ]]; then
-    QT="5"
-elif [[ "$qt_version" == "6" ]]; then
-    QT="6"
-else
-    QT="0"
+if [[ "$build_variant" == "normal" ]]; then
+    echo "Building normal variant"
+    if [[ "$qt_version" == "5" ]]; then
+        QT="5"
+        echo $QT
+    elif [[ "$qt_version" == "6" ]]; then
+        QT="6"
+        echo $QT
+    else
+        echo "Building headless variant"
+        QT="0"
+        echo $QT
+    fi
 fi
 
 if [[ "${target_platform}" == osx-* ]]; then
