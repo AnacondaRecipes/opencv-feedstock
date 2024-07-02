@@ -233,7 +233,7 @@ outputs:
       commands:
         - echo "tested in other outputs"
 
-  {% if build_variant == "normal" %}
+{% if build_variant == "normal" %}
   - name: py-opencv
     build:
       string: headless_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "headless"]
@@ -277,7 +277,7 @@ outputs:
         - pip list
         - test $(pip list | grep opencv-python | wc -l) -eq 2  # [unix]
         - test $(pip list | grep opencv-python-headless | wc -l) -eq 1  # [unix]
-  {% endif %}
+{% endif %}
 
 about:
   home: https://opencv.org/
