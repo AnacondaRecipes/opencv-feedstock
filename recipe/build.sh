@@ -16,17 +16,11 @@ fi
 
 if [[ "$build_variant" == "normal" ]]; then
     echo "Building normal variant"
-    if [[ "$qt_version" == "5" ]]; then
-        QT="5"
-        echo $QT
-    elif [[ "$qt_version" == "6" ]]; then
-        QT="6"
-        echo $QT
-    else
-        echo "Building headless variant"
-        QT="0"
-        echo $QT
-    fi
+    QT="5"
+else
+    echo "Building headless variant"
+    QT="0"
+    echo $QT
 fi
 
 if [[ "${target_platform}" == osx-* ]]; then
