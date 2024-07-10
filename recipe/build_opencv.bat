@@ -12,13 +12,14 @@ if "%PY3K%" == "0" (
 mkdir build
 cd build
 
-@REM if "%build_variant%" == "normal" (
-@REM   echo "Building normal variant"
-@REM   set QT_VERSION=5
-
-if "%qt_version%"=="5" set WITH_QT="-DWITH_QT=5"
-if "%qt_version%"=="6" set WITH_QT="-DWITH_QT=6"
-if "%qt_version%"=="none" set WITH_QT="-DWITH_QT=0"
+if "%build_variant%" == "normal" (
+  echo "Building normal variant"
+  set QT_VERSION=5
+)
+else (
+  echo "Building headless variant"
+  set QT_VERSION=0
+)
 
 for /F "tokens=1,2 delims=. " %%a in ("%PY_VER%") do (
    set "PY_MAJOR=%%a"
@@ -89,6 +90,7 @@ cmake -LAH -G "Ninja"                                                           
     -DWITH_GSTREAMER=0                                                              ^
     -DWITH_TESSERACT=0                                                              ^
     -DWITH_VTK=0                                                                    ^
+    -DWITH_QT=%QT_VERSION%                                                          ^
     -DWITH_WIN32UI=0                                                                ^
     -DINSTALL_C_EXAMPLES=0                                                          ^
     -DOPENCV_EXTRA_MODULES_PATH=%UNIX_SRC_DIR%/opencv_contrib/modules               ^
