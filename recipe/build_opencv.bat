@@ -15,8 +15,7 @@ cd build
 if "%build_variant%" == "normal" (
   echo "Building normal variant"
   set QT_VERSION=5
-)
-else (
+) else (
   echo "Building headless variant"
   set QT_VERSION=0
 )
@@ -43,9 +42,16 @@ set UNIX_SRC_DIR=%SRC_DIR:\=/%
 :: FFMPEG building requires pkgconfig
 set PKG_CONFIG_PATH=%UNIX_LIBRARY_PREFIX%/lib/pkgconfig
 
-
+rem Note that though a dependency may be installed it may not be detected
+rem correctly by this build system and so some functionality may be disabled
+rem (this is more frequent on Windows but does sometimes happen on other OSes).
+rem Note that -DBUILD_x=0 may not be honoured for any particular dependency x.
+rem If -DHAVE_x=1 is used it may be that the undetected conda package is
+rem ignored in lieu of libraries that are built as part of this build (this
+rem will likely result in an overdepending error). Check the 3rdparty libraries
+rem directory in the build directory to see what has been vendored by the
+rem opencv build
 cmake -LAH -G "Ninja"                                                               ^
-    -DCMAKE_CXX_STANDARD=17                                                         ^
     -DCMAKE_BUILD_TYPE="Release"                                                    ^
     -DCMAKE_INSTALL_PREFIX=%UNIX_LIBRARY_PREFIX%                                    ^
     -DCMAKE_PREFIX_PATH=%UNIX_LIBRARY_PREFIX%                                       ^
@@ -55,27 +61,38 @@ cmake -LAH -G "Ninja"                                                           
     -DOPENCV_GENERATE_SETUPVARS=OFF                                                 ^
     -DOPENCV_DOWNLOAD_TRIES=1;2;3;4;5                                               ^
     -DOPENCV_DOWNLOAD_PARAMS=INACTIVITY_TIMEOUT;30;TIMEOUT;180;SHOW_PROGRESS        ^
-    -DWITH_LAPACK=0                                                                 ^
-    -DWITH_EIGEN=1                                                                  ^
+    -DOPENCV_GENERATE_PKGCONFIG=ON                                                  ^
     -DENABLE_CONFIG_VERIFICATION=ON                                                 ^
     -DENABLE_PRECOMPILED_HEADERS=OFF                                                ^
+    -DWITH_LAPACK=0                                                                 ^
+    -DCMAKE_CXX_STANDARD=17                                                         ^
+    -DWITH_EIGEN=1                                                                  ^
     -DBUILD_TESTS=0                                                                 ^
     -DBUILD_DOCS=0                                                                  ^
     -DBUILD_PERF_TESTS=0                                                            ^
     -DBUILD_ZLIB=0                                                                  ^
-    -DBUILD_opencv_bioinspired=0                                                    ^
-    -DBUILD_TIFF=0                                                                  ^
     -DBUILD_PNG=0                                                                   ^
+    -DBUILD_JPEG=0                                                                  ^
+    -DBUILD_TIFF=0                                                                  ^
+    -DBUILD_WEBP=0                                                                  ^
+    -DBUILD_OPENJPEG=0                                                              ^
+    -DBUILD_JASPER=0                                                                ^
+    -DBUILD_OPENEXR=0                                                               ^
+    -DWITH_PNG=ON                                                                   ^
+    -DWITH_JPEG=ON                                                                  ^
+    -DWITH_TIFF=ON                                                                  ^
+    -DWITH_WEBP=ON                                                                  ^
+    -DWEBP_LIBRARY=%PREFIX%/Library/lib/libwebp.lib                                 ^
+    -DWEBP_INCLUDE_DIR=%PREFIX%/Library/include                                     ^
+    -DWITH_OPENJPEG=ON                                                              ^
+    -DWITH_JASPER=OFF                                                               ^
+    -DWITH_OPENEXR=ON                                                               ^
     -DWITH_PROTOBUF=1                                                               ^
     -DBUILD_PROTOBUF=0                                                              ^
     -DPROTOBUF_UPDATE_FILES=1                                                       ^
-    -DBUILD_OPENEXR=0                                                               ^
-    -DWITH_OPENEXR=1                                                                ^
-    -DBUILD_JASPER=0                                                                ^
-    -DWITH_JASPER=0                                                                 ^
-    -DWITH_OPENJPEG=1                                                               ^
-    -DBUILD_JPEG=0                                                                  ^
+    -DBUILD_opencv_bioinspired=0                                                    ^
     -DWITH_CUDA=0                                                                   ^
+    -DWITH_CUBLAS=0                                                                 ^
     -DWITH_OPENCL=0                                                                 ^
     -DWITH_OPENCLAMDFFT=0                                                           ^
     -DWITH_OPENCLAMDBLAS=0                                                          ^
@@ -84,21 +101,25 @@ cmake -LAH -G "Ninja"                                                           
     -DWITH_1394=0                                                                   ^
     -DWITH_OPENNI=0                                                                 ^
     -DWITH_HDF5=1                                                                   ^
-    -DOPENCV_ENABLE_PKG_CONFIG=1                                                    ^
     -DWITH_FFMPEG=0                                                                 ^
     -DWITH_TENGINE=0                                                                ^
-    -DWITH_GSTREAMER=0                                                              ^
+    -DWITH_GSTREAMER=1                                                              ^
+    -DWITH_MATLAB=0                                                                 ^
     -DWITH_TESSERACT=0                                                              ^
+    -DWITH_VA=0                                                                     ^
+    -DWITH_VA_INTEL=0                                                               ^
     -DWITH_VTK=0                                                                    ^
+    -DWITH_GTK=0                                                                    ^
     -DWITH_QT=%QT_VERSION%                                                          ^
+    -DWITH_GPHOTO2=0                                                                ^
     -DWITH_WIN32UI=0                                                                ^
     -DINSTALL_C_EXAMPLES=0                                                          ^
     -DOPENCV_EXTRA_MODULES_PATH=%UNIX_SRC_DIR%/opencv_contrib/modules               ^
-    -DPYTHON_EXECUTABLE=""                                                          ^
-    -DPYTHON_INCLUDE_DIR=""                                                         ^
-    -DPYTHON_PACKAGES_PATH=""                                                       ^
-    -DPYTHON_LIBRARY=""                                                             ^
-    -DPYTHON_NUMPY_INCLUDE_DIRS=""                                                  ^
+    -DPYTHON_EXECUTABLE=%UNIX_PREFIX%/python                                        ^
+    -DPYTHON_INCLUDE_PATH=%UNIX_PREFIX%/include                                     ^
+    -DPYTHON_PACKAGES_PATH=%UNIX_SP_DIR%                                            ^
+    -DPYTHON_LIBRARY=%UNIX_PREFIX%/libs/%PY_LIB%                                    ^
+    -DOPENCV_SKIP_PYTHON_LOADER=1                                                   ^
     -DBUILD_opencv_python2=0                                                        ^
     -DPYTHON2_EXECUTABLE=""                                                         ^
     -DPYTHON2_INCLUDE_DIR=""                                                        ^
@@ -106,15 +127,9 @@ cmake -LAH -G "Ninja"                                                           
     -DPYTHON2_LIBRARY=""                                                            ^
     -DPYTHON2_PACKAGES_PATH=""                                                      ^
     -DOPENCV_PYTHON2_INSTALL_PATH=""                                                ^
-    -DBUILD_opencv_python3=0                                                        ^
-    -DPYTHON_EXECUTABLE=%UNIX_PREFIX%/python                                        ^
-    -DPYTHON_INCLUDE_DIR=%UNIX_PREFIX%/include                                      ^
-    -DPYTHON_PACKAGES_PATH=%UNIX_SP_DIR%                                            ^
-    -DPYTHON_LIBRARY=%UNIX_PREFIX%/libs/%PY_LIB%                                    ^
     -DBUILD_opencv_python3=1                                                        ^
-    -DOPENCV_SKIP_PYTHON_LOADER=1                                                   ^
     -DPYTHON3_EXECUTABLE=%UNIX_PREFIX%/python                                       ^
-    -DPYTHON3_INCLUDE_DIR=%UNIX_PREFIX%/include                                     ^
+    -DPYTHON3_INCLUDE_PATH=%UNIX_PREFIX%/include                                    ^
     -DPYTHON3_LIBRARY=%UNIX_PREFIX%/libs/%PY_LIB%                                   ^
     -DPYTHON3_PACKAGES_PATH=%UNIX_SP_DIR%                                           ^
     -DOPENCV_PYTHON3_INSTALL_PATH=%UNIX_SP_DIR%                                     ^

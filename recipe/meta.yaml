@@ -102,7 +102,7 @@ outputs:
         - python
         - numpy {{ numpy }}
         - eigen 3.4.0
-        - ffmpeg 4
+        - ffmpeg 4                  # [not win]
         - freetype {{ freetype }}
         # harfbuzz, glib, gettext are both needed for freetype support
         - harfbuzz {{ harfbuzz }}
@@ -126,7 +126,7 @@ outputs:
         - {{ pin_compatible('numpy') }}
         # bounds set through run exports
         - eigen
-        - ffmpeg
+        - ffmpeg                # [not win]
         - freetype
         - harfbuzz
         - libglib
@@ -302,6 +302,7 @@ about:
   license_family: Apache
   license_file: LICENSE
   summary: Computer vision and machine learning software library.
+  description: Computer vision and machine learning software library.
   dev_url: https://github.com/opencv/opencv
   doc_url: https://docs.opencv.org/{{ major_version }}.x/
 
