@@ -50,8 +50,8 @@ fi
 # FFMPEG building requires pkgconfig
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX/lib/pkgconfig
 
-mkdir -p build
-cd build
+mkdir -p build${PY_VER}
+cd build${PY_VER}
 
 cmake -LAH -G "Ninja"                                                     \
     ${CMAKE_ARGS}                                                         \

@@ -1,17 +1,6 @@
 @echo ON
 setlocal enabledelayedexpansion
 
-
-if "%PY3K%" == "0" (
-    echo "Copying stdint.h for windows"
-    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\calib3d\include\stdint.h
-    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\videoio\include\stdint.h
-    copy "%LIBRARY_INC%\stdint.h" %SRC_DIR%\modules\highgui\include\stdint.h
-)
-
-mkdir build
-cd build
-
 if "%build_variant%" == "normal" (
   echo "Building normal variant"
   set QT_VERSION=5
@@ -25,6 +14,9 @@ for /F "tokens=1,2 delims=. " %%a in ("%PY_VER%") do (
    set "PY_MINOR=%%b"
 )
 set PY_LIB=python%PY_MAJOR%%PY_MINOR%.lib
+
+mkdir build%PY_MAJOR%%PY_MINOR%
+cd build%PY_MAJOR%%PY_MINOR%
 
 :: Workaround for building LAPACK headers with C++17
 :: see https://github.com/conda-forge/opencv-feedstock/pull/363#issuecomment-1604972688
