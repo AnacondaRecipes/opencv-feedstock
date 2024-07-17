@@ -1,15 +1,12 @@
 # This recipe creates 3 packages
 # libopencv, py-opencv, opencv
 #
-# libopencv actually contains all the files, including the site-packages
+# opencv actually contains all the files, including the site-packages
 # file needed to run opencv with python.
-#     opencv-dnn seems to change on every patch version, therefore, we pin
-#     to the patch version x.x.x
 #
-# py-opencv is a meta package that constrains the python dependencies
-#     This one is pinned to the minor version. x.x
+# libopencv and py-opencv are aliases
 #
-# opencv is a backward compatible package, with no pinnings
+# opencv-python-headless is the headless variant of opencv (i.e. no dep on qt)
 #
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
@@ -84,6 +81,9 @@ outputs:
         - pkg-config
         - cmake
         - ninja-base
+        # pkg-config on win pulls in python
+        # adding here explicitely to pull in the same version as in host
+        - python
         - {{ cdt('libselinux') }}        # [linux]
         - {{ cdt('libxau-devel') }}      # [linux]
         - {{ cdt('libxcb') }}            # [linux]
@@ -107,8 +107,10 @@ outputs:
         # harfbuzz, glib, gettext are both needed for freetype support
         - harfbuzz {{ harfbuzz }}
         - libglib {{ glib }}
-        - gst-plugins-base {{ gst_plugins_base }}
-        - gstreamer {{ gstreamer }}
+        - gst-plugins-base {{ gst_plugins_base }} # [unix]
+        - gstreamer {{ gstreamer }} # [unix]
+        - gst-plugins-base 1.22.3 # [win]
+        - gstreamer 1.22.3 # [win]
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}           # [not win]
         - openjpeg {{ openjpeg }}
@@ -149,8 +151,6 @@ outputs:
           - {{ compiler('c') }}
           - {{ compiler('cxx') }}
           - pkg-config                    # [not win]
-          # Test with the two currently supported lapack implementatons
-          # One test done on different versions of python on each platform
           - cmake
           - ninja
         files:
