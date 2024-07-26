@@ -53,6 +53,23 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX/lib/pkgconfig
 mkdir -p build${PY_VER}
 cd build${PY_VER}
 
+# Note that though a dependency may be installed it may not be detected
+# correctly by this build system and so some functionality may be disabled
+# (this is more frequent on Windows but does sometimes happen on other OSes).
+# Note that -DBUILD_x=0 may not be honoured for any particular dependency x.
+# If -DHAVE_x=1 is used it may be that the undetected conda package is
+# ignored in lieu of libraries that are built as part of this build (this
+# will likely result in an overdepending error). Check the 3rdparty libraries
+# directory in the build directory to see what has been vendored by the
+# opencv build.
+#
+# The flags are set to enable the maximum set of features we are able to build,
+# And align dependencies across subdirs. We also aim to preserve functionality 
+# between updates. Each flag has a helper description in the upstream cmake files.
+#
+# A number of data files are downloaded when building opencv contrib.
+# We may want to revisit that in a future update.
+# The OPENCV_DOWNLOAD flags are there to make these downloads more robust.
 cmake -LAH -G "Ninja"                                                     \
     ${CMAKE_ARGS}                                                         \
     -DCMAKE_BUILD_TYPE="Release"                                          \

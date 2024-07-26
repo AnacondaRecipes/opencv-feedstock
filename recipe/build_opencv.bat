@@ -42,7 +42,16 @@ rem If -DHAVE_x=1 is used it may be that the undetected conda package is
 rem ignored in lieu of libraries that are built as part of this build (this
 rem will likely result in an overdepending error). Check the 3rdparty libraries
 rem directory in the build directory to see what has been vendored by the
-rem opencv build
+rem opencv build.
+rem
+rem The flags are set to enable the maximum set of features we are able to build,
+rem And align dependencies across subdirs. We also aim to preserve functionality 
+rem between updates. Each flag has a helper description in the upstream cmake files.
+rem
+rem A number of data files are downloaded when building opencv contrib.
+rem We may want to revisit that in a future update.
+rem The OPENCV_DOWNLOAD flags are there to make these downloads more robust.
+rem ENABLE_PRECOMPILED_HEADERS is deprecated on win and set to OFF as such.
 cmake -LAH -G "Ninja"                                                               ^
     -DCMAKE_BUILD_TYPE="Release"                                                    ^
     -DCMAKE_INSTALL_PREFIX=%UNIX_LIBRARY_PREFIX%                                    ^
@@ -53,7 +62,7 @@ cmake -LAH -G "Ninja"                                                           
     -DOPENCV_GENERATE_SETUPVARS=OFF                                                 ^
     -DOPENCV_DOWNLOAD_TRIES=1;2;3;4;5                                               ^
     -DOPENCV_DOWNLOAD_PARAMS=INACTIVITY_TIMEOUT;30;TIMEOUT;180;SHOW_PROGRESS        ^
-    -DOPENCV_GENERATE_PKGCONFIG=ON                                                  ^
+    -DOPENCV_GENERATE_PKGCONFIG=OFF                                                 ^
     -DENABLE_CONFIG_VERIFICATION=ON                                                 ^
     -DENABLE_PRECOMPILED_HEADERS=OFF                                                ^
     -DWITH_LAPACK=0                                                                 ^
