@@ -112,7 +112,7 @@ outputs:
         - gst-plugins-base 1.22.3 # [win]
         - gstreamer 1.22.3 # [win]
         - hdf5 {{ hdf5 }}
-        - jpeg {{ jpeg }}           # [not win]
+        - jpeg {{ jpeg }}
         - openjpeg {{ openjpeg }}
         - libiconv 1.16             # [unix]
         - libpng  {{ libpng }}
