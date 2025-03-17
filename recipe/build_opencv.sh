@@ -16,7 +16,7 @@ fi
 
 if [[ "$build_variant" == "normal" ]]; then
     echo "Building normal variant"
-    QT="5"
+    QT="6"
 else
     echo "Building headless variant"
     QT="0"
