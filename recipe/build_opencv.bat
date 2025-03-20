@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 if "%build_variant%" == "normal" (
   echo "Building normal variant"
-  set QT_VERSION=5
+  set QT_VERSION=6
 ) else (
   echo "Building headless variant"
   set QT_VERSION=0
