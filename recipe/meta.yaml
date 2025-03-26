@@ -11,7 +11,7 @@
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
 {% set version = "4.10.0" %}
-{% set build_num = "3" %}
+{% set build_num = "4" %}
 {% set major_version = version.split('.')[0] %}
 {% set PY_VER_MAJOR = PY_VER.split('.')[0] %}
 {% set PY_VER_MINOR = PY_VER.split('.')[1] %}
@@ -120,7 +120,7 @@ outputs:
         - libpng  {{ libpng }}
         - libprotobuf 4.25.3
         - libabseil 20240116.2
-        - libtiff {{ libtiff }}
+        - libtiff 4.7.0
         - libwebp-base {{ libwebp }}
         - qtbase 6                 # [build_variant == "normal"]
         - qt5compat                # [build_variant == "normal"]
