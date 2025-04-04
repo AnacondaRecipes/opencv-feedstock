@@ -115,7 +115,7 @@ outputs:
         - gstreamer 1.22.3 # [win]
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}
-        - openjpeg {{ openjpeg }}
+        - openjpeg 2.5.2
         - libiconv 1.16             # [unix]
         - libpng  {{ libpng }}
         - libprotobuf 5.29.3
