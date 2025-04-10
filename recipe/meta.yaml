@@ -109,10 +109,8 @@ outputs:
         # harfbuzz, glib, gettext are both needed for freetype support
         - harfbuzz {{ harfbuzz }}
         - libglib {{ glib }}
-        - gst-plugins-base {{ gst_plugins_base }} # [unix]
-        - gstreamer {{ gstreamer }} # [unix]
-        - gst-plugins-base 1.22.3 # [win]
-        - gstreamer 1.22.3 # [win]
+        - gstreamer 1.24
+        - gst-plugins-base 1.24
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}
         - openjpeg 2.5.2
