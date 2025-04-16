@@ -320,6 +320,7 @@ about:
 extra:
   skip-lints:
     - host_section_needs_exact_pinnings
+    - missing_imports_or_run_test_py
   recipe-maintainers:
     - h-vetinari
     - xhochy
