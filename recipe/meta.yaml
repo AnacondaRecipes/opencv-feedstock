@@ -87,19 +87,12 @@ outputs:
         # pkg-config on win pulls in python
         # adding here explicitly to pull in the same version as in host
         - python                         # [win]
-        - {{ cdt('libselinux') }}        # [linux]
-        - {{ cdt('libxau-devel') }}      # [linux]
-        - {{ cdt('libxcb') }}            # [linux]
-        - {{ cdt('libxdamage-devel') }}  # [linux]
-        - {{ cdt('libxext-devel') }}     # [linux]
-        - {{ cdt('libxfixes-devel') }}   # [linux]
-        - {{ cdt('libxi-devel') }}       # [linux]
-        - {{ cdt('libxrender-devel') }}  # [linux]
-        - {{ cdt('libxxf86vm') }}        # [linux]
-        - {{ cdt('mesa-libegl-devel') }} # [linux]
-        - {{ cdt('mesa-libgbm') }}       # [linux]
-        - {{ cdt('mesa-libgl-devel') }}  # [linux]
-        - {{ cdt('mesa-dri-drivers') }}  # [linux]
+        # TODO: map CDT libselinux to new X11 package
+        # - { cdt('libselinux') }
+        # TODO: map CDT mesa-libegl-devel to new X11 package
+        # - { cdt('mesa-libegl-devel') }
+        # TODO: map CDT mesa-libgbm to new X11 package
+        # - { cdt('mesa-libgbm') }
       host:
         - python
         - numpy {{ numpy }}
@@ -123,6 +116,21 @@ outputs:
         - qtbase 6                 # [build_variant == "normal"]
         - qt5compat                # [build_variant == "normal"]
         - zlib {{ zlib }}
+        - xorg-libxau
+        - libxcb
+        - xorg-libxdamage
+        - xorg-libxext
+        - xorg-libxfixes
+        - xorg-libxi
+        - xorg-libxrender
+        - xorg-libxxf86vm
+        - libgl-devel
+        - mesa-dri-drivers
+          - xorg-libxext
+          - xorg-libxdamage
+          - xorg-libxfixes
+          - xorg-libxxf86vm
+          - mesa-dri-drivers
       run:
         - _openmp_mutex         # [linux]
         - python
@@ -157,16 +165,16 @@ outputs:
           - cmake
           - ninja
           - pip
-          - {{ cdt('mesa-libgl') }}        # [linux]
-          - {{ cdt('libx11') }}            # [linux]
-          - {{ cdt('libxau') }}            # [linux]
-          - {{ cdt('libxext') }}           # [linux]
-          - {{ cdt('libxdamage') }}        # [linux]
-          - {{ cdt('libxfixes') }}         # [linux]
-          - {{ cdt('libxxf86vm') }}        # [linux]
-          - {{ cdt('mesa-dri-drivers') }}  # [linux]
-          - {{ cdt('mesa-libegl') }}       # [linux]
-          - {{ cdt('mesa-libgbm') }}       # [linux]
+          # TODO: map CDT mesa-libgl to new X11 package
+          # - { cdt('mesa-libgl') }
+          # TODO: map CDT libx11 to new X11 package
+          # - { cdt('libx11') }
+          # TODO: map CDT libxau to new X11 package
+          # - { cdt('libxau') }
+          # TODO: map CDT mesa-libegl to new X11 package
+          # - { cdt('mesa-libegl') }
+          # TODO: map CDT mesa-libgbm to new X11 package
+          # - { cdt('mesa-libgbm') }
         files:
           - CMakeLists.txt
           - test.cpp
