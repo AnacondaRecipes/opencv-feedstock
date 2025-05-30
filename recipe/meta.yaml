@@ -105,21 +105,11 @@ outputs:
         - libabseil 20250127.0
         - libtiff {{ libtiff }}
         - libwebp-base {{ libwebp }}
+        # Note: X11/Xorg/XCB/OpenGL packages are handled by qtbase's run_exports
+        # OpenCV uses Qt for GUI functionality, so no direct X11 dependencies needed
         - qtbase 6                 # [build_variant == "normal"]
         - qt5compat                # [build_variant == "normal"]
         - zlib {{ zlib }}
-        - libegl-devel             # [linux]
-        - libgl-devel              # [linux]
-        - libxcb                   # [linux]
-        - mesalib                  # [linux]
-        - xorg-libx11              # [linux]
-        - xorg-libxau              # [linux]
-        - xorg-libxdamage          # [linux]
-        - xorg-libxext             # [linux]
-        - xorg-libxfixes           # [linux]
-        - xorg-libxi               # [linux]
-        - xorg-libxrender          # [linux]
-        - xorg-libxxf86vm          # [linux]
       run:
         - _openmp_mutex         # [linux]
         - python
@@ -154,6 +144,8 @@ outputs:
           - cmake
           - ninja
           - pip
+          # X11/OpenGL packages kept in test for proper testing of OpenCV functionality
+          # even though qtbase handles these dependencies at runtime
           - libegl-devel                   # [linux]
           - libgl-devel                    # [linux]
           - mesalib                        # [linux]
