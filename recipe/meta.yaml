@@ -50,6 +50,8 @@ source:
 
 build:
   number: {{ build_num }}
+  # qtbase isn't available for osx-64
+  skip: True  # [osx and x86_64]
 
 requirements:
   build:

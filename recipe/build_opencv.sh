@@ -50,6 +50,19 @@ fi
 # FFMPEG building requires pkgconfig
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX/lib/pkgconfig
 
+# Set up proper include paths for GLib and GStreamer
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/glib-2.0 -I$PREFIX/lib/glib-2.0/include"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/gstreamer-1.0"
+
+# Ensure OpenGL libraries can be found for Qt
+if [[ "${target_platform}" == linux-* ]]; then
+    export LDFLAGS="$LDFLAGS -L$PREFIX/lib"
+    # Make sure CMake can find OpenGL libraries
+    export CMAKE_ARGS="$CMAKE_ARGS -DOPENGL_gl_LIBRARY=$PREFIX/lib/libGL.so"
+    export CMAKE_ARGS="$CMAKE_ARGS -DOPENGL_glu_LIBRARY=$PREFIX/lib/libGLU.so"
+    export CMAKE_ARGS="$CMAKE_ARGS -DOPENGL_INCLUDE_DIR=$PREFIX/include/GL"
+fi
+
 mkdir -p build${PY_VER}
 cd build${PY_VER}
 
@@ -127,6 +140,7 @@ cmake -LAH -G "Ninja"                                                     \
     -DWITH_VTK=0                                                          \
     -DWITH_GTK=0                                                          \
     -DWITH_QT=$QT                                                         \
+    -DWITH_OPENGL=ON                                                      \
     -DWITH_GPHOTO2=0                                                      \
     -DINSTALL_C_EXAMPLES=0                                                \
     -DOPENCV_EXTRA_MODULES_PATH="../opencv_contrib/modules"               \
