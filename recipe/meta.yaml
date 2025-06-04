@@ -87,28 +87,35 @@ outputs:
         - python                         # [win]
       host:
         - python
-        - numpy {{ numpy }}
         - eigen 3.4.0
-        - ffmpeg 6                  # [not win]
+        - ffmpeg {{ ffmpeg }}           # [not win]
         - freetype {{ freetype }}
+        - gst-plugins-base {{ gst_plugins_base }}
+        - gstreamer {{ gstreamer }}
         # harfbuzz, glib, gettext are both needed for freetype support
         - harfbuzz {{ harfbuzz }}
-        - libglib {{ glib }}
-        - gstreamer 1.24
-        - gst-plugins-base 1.24
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}
-        - openjpeg 2.5.2
-        - libiconv 1.16             # [unix]
-        - libpng  {{ libpng }}
-        - libprotobuf 5.29.3
-        - libabseil 20250127.0
+        - libabseil {{ libabseil }}
+        # Essential X11/OpenGL libraries for Qt to function properly
+        - libegl                         # [linux]
+        - libgl-devel                    # [linux]
+        - libglib {{ glib }}
+        - libiconv {{ libiconv }}                  # [unix]
+        - libpng {{ libpng }}
+        - libprotobuf {{ libprotobuf }}
         - libtiff {{ libtiff }}
         - libwebp-base {{ libwebp }}
-        # Note: X11/Xorg/XCB/OpenGL packages are handled by qtbase's run_exports
-        # OpenCV uses Qt for GUI functionality, so no direct X11 dependencies needed
-        - qtbase 6                 # [build_variant == "normal"]
-        - qt5compat                # [build_variant == "normal"]
+        - libxcb                         # [linux]
+        - mesalib                        # [linux]
+        - numpy {{ numpy }}
+        - openjpeg {{ openjpeg }}
+        - qtbase-devel 6                 # [build_variant == "normal"]
+        - qt5compat                      # [build_variant == "normal"]
+        - xorg-libx11                    # [linux]
+        - xorg-libxau                    # [linux]
+        - xorg-libxext                   # [linux]
+        - xorg-xorgproto                 # [linux]
         - zlib {{ zlib }}
       run:
         - _openmp_mutex         # [linux]
@@ -149,6 +156,7 @@ outputs:
           - libegl-devel                   # [linux]
           - libgl-devel                    # [linux]
           - mesalib                        # [linux]
+          - qtbase-devel                   # [linux and build_variant == "normal"]
           - xorg-libx11                    # [linux]
           - xorg-libxau                    # [linux]
           - xorg-xorgproto                 # [linux]
