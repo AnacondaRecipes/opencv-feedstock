@@ -68,6 +68,10 @@ outputs:
       ignore_run_exports:
         # qt5compat is needed for a CMake find_package() call but is not actually used in OpenCV anymore.
         - qt5compat
+        # GStreamer libraries - OpenCV uses them but they don't need explicit run_exports
+        - gst-plugins-base
+        - gstreamer
+        - libglib
     run_exports:
       # We are cautiously optimistic here that patch-level updates won't break
       # ABI. However, it sounds like upstream won't guarantee *any* sort of
@@ -99,25 +103,16 @@ outputs:
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}
         - libabseil {{ libabseil }}
-        # Essential X11/OpenGL libraries for Qt to function properly
-        - libegl                         # [linux]
-        - libgl-devel                    # [linux]
         - libglib {{ glib }}
         - libiconv {{ libiconv }}                  # [unix]
         - libpng {{ libpng }}
         - libprotobuf {{ libprotobuf }}
         - libtiff {{ libtiff }}
         - libwebp-base {{ libwebp }}
-        - libxcb                         # [linux]
-        - mesalib                        # [linux]
         - numpy {{ numpy }}
         - openjpeg {{ openjpeg }}
         - qtbase-devel 6                 # [build_variant == "normal"]
         - qt5compat                      # [build_variant == "normal"]
-        - xorg-libx11                    # [linux]
-        - xorg-libxau                    # [linux]
-        - xorg-libxext                   # [linux]
-        - xorg-xorgproto                 # [linux]
         - zlib {{ zlib }}
       run:
         - _openmp_mutex         # [linux]
@@ -140,7 +135,7 @@ outputs:
         - libabseil
         - libtiff
         - libwebp-base
-        - qtbase          # [build_variant == "normal"]
+        - qtbase-devel         # [build_variant == "normal"]
         - zlib
 
     test:
