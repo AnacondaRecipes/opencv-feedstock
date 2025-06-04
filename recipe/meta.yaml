@@ -114,6 +114,13 @@ outputs:
         - qtbase-devel 6                 # [build_variant == "normal"]
         - qt5compat                      # [build_variant == "normal"]
         - zlib {{ zlib }}
+        # Essential X11/OpenGL libraries for OpenCV functionality on Linux
+        - libgl-devel                    # [linux]
+        - libxcb                         # [linux]
+        - mesalib                        # [linux]
+        - xorg-libx11                    # [linux]
+        - xorg-libxext                   # [linux]
+        - xorg-xorgproto                 # [linux]
       run:
         - _openmp_mutex         # [linux]
         - python
@@ -135,7 +142,7 @@ outputs:
         - libabseil
         - libtiff
         - libwebp-base
-        - qtbase-devel         # [build_variant == "normal"]
+        - qtbase         # [build_variant == "normal"]
         - zlib
 
     test:
@@ -151,9 +158,8 @@ outputs:
           # X11/OpenGL packages kept in test for proper testing of OpenCV functionality
           # even though qtbase handles these dependencies at runtime
           - libegl-devel                   # [linux]
-          - libgl-devel                    # [linux]
           - mesalib                        # [linux]
-          - qtbase-devel                   # [linux and build_variant == "normal"]
+          - qtbase                         # [linux and build_variant == "normal"]
           - xorg-libx11                    # [linux]
           - xorg-libxau                    # [linux]
           - xorg-xorgproto                 # [linux]
