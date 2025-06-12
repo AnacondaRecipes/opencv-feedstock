@@ -138,8 +138,6 @@ outputs:
         - libwebp-base
         - qtbase          # [build_variant == "normal"]
         - zlib
-        # OpenGL implementation needed at runtime since OpenCV links against libgl
-        - mesalib         # [linux]
 
     test:
         source_files:
