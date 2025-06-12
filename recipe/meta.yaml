@@ -135,7 +135,7 @@ outputs:
         - libabseil
         - libtiff
         - libwebp-base
-        - qtbase         # [build_variant == "normal"]
+        - qtbase-devel 6  # [build_variant == "normal"]
         - zlib
 
     test:
