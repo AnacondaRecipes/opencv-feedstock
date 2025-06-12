@@ -113,6 +113,7 @@ outputs:
         - openjpeg {{ openjpeg }}
         - qtbase-devel 6                 # [build_variant == "normal"]
         - qt5compat                      # [build_variant == "normal"]
+        - libgl-devel {{ libgl }}        # [linux]
         - zlib {{ zlib }}
       run:
         - _openmp_mutex         # [linux]
@@ -135,8 +136,10 @@ outputs:
         - libabseil
         - libtiff
         - libwebp-base
-        - qtbase-devel 6  # [build_variant == "normal"]
+        - qtbase          # [build_variant == "normal"]
         - zlib
+        # OpenGL implementation needed at runtime since OpenCV links against libgl
+        - mesalib         # [linux]
 
     test:
         source_files:
