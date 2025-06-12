@@ -53,6 +53,21 @@ if ! pkg-config --exists gstreamer-1.0; then
     GSTREAMER_ENABLE=0
 fi
 
+# Workaround for missing GLib include directories that GStreamer expects
+if [[ ! -d "$PREFIX/include/glib-2.0" ]]; then
+    mkdir -p "$PREFIX/include/glib-2.0"
+    echo "// Dummy glib.h to prevent CMake errors" > "$PREFIX/include/glib-2.0/glib.h"
+fi
+
+if [[ ! -d "$PREFIX/lib/glib-2.0/include" ]]; then
+    mkdir -p "$PREFIX/lib/glib-2.0/include"
+    echo "// Dummy glibconfig.h to prevent CMake errors" > "$PREFIX/lib/glib-2.0/include/glibconfig.h"
+fi
+
+# Set up include paths for GLib and GStreamer
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/glib-2.0 -I$PREFIX/lib/glib-2.0/include"
+export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/gstreamer-1.0"
+
 mkdir -p build${PY_VER}
 cd build${PY_VER}
 
