@@ -35,9 +35,11 @@ fi
 
 export PKG_CONFIG_LIBDIR=$PREFIX/lib
 
-# Set up include paths for GLib and GStreamer
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/glib-2.0 -I$PREFIX/lib/glib-2.0/include"
-export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/gstreamer-1.0"
+# Set up include paths for GLib and GStreamer on macOS
+if [[ "${target_platform}" == osx-* ]]; then
+    export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/glib-2.0 -I$PREFIX/lib/glib-2.0/include"
+    export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/gstreamer-1.0"
+fi
 
 IS_PYPY=$(${PYTHON} -c "import platform; print(int(platform.python_implementation() == 'PyPy'))")
 
