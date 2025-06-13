@@ -103,7 +103,7 @@ outputs:
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}
         - libabseil {{ libabseil }}
-        - libglib {{ glib }}
+        - glib {{ glib }}
         - libiconv {{ libiconv }}                  # [unix]
         - libpng {{ libpng }}
         - libprotobuf {{ libprotobuf }}
@@ -124,7 +124,7 @@ outputs:
         - ffmpeg                # [not win]
         - freetype
         - harfbuzz
-        - libglib
+        - glib
         - gst-plugins-base
         - gstreamer
         - hdf5
