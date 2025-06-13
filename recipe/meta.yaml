@@ -71,7 +71,7 @@ outputs:
         # GStreamer libraries - OpenCV uses them but they don't need explicit run_exports
         - gst-plugins-base
         - gstreamer
-        - libglib
+        - glib
     run_exports:
       # We are cautiously optimistic here that patch-level updates won't break
       # ABI. However, it sounds like upstream won't guarantee *any* sort of
@@ -103,8 +103,9 @@ outputs:
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}
         - libabseil {{ libabseil }}
-        - glib {{ glib }}
-        - libiconv {{ libiconv }}                  # [unix]
+        - glib {{ glib }}                  # [not osx]
+        - libglib {{ glib }}               # [osx]
+        - libiconv {{ libiconv }}          # [unix]
         - libpng {{ libpng }}
         - libprotobuf {{ libprotobuf }}
         - libtiff {{ libtiff }}
@@ -124,7 +125,8 @@ outputs:
         - ffmpeg                # [not win]
         - freetype
         - harfbuzz
-        - glib
+        - glib                             # [not osx]
+        - libglib                          # [osx]
         - gst-plugins-base
         - gstreamer
         - hdf5
