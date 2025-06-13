@@ -90,7 +90,7 @@ outputs:
         - ninja-base
         # pkg-config on win pulls in python
         # adding here explicitly to pull in the same version as in host
-        - python 3.12                   # [win]
+        - python 3.9                   # [win]
       host:
         - python
         - eigen 3.4.0
