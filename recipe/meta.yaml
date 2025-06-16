@@ -148,14 +148,6 @@ outputs:
           - cmake
           - ninja
           - pip
-          # X11/OpenGL packages kept in test for proper testing of OpenCV functionality
-          # even though qtbase handles these dependencies at runtime
-          - libegl-devel                   # [linux]
-          - mesalib                        # [linux]
-          - qtbase                         # [linux and build_variant == "normal"]
-          - xorg-libx11                    # [linux]
-          - xorg-libxau                    # [linux]
-          - xorg-xorgproto                 # [linux]
         files:
           - CMakeLists.txt
           - test.cpp
