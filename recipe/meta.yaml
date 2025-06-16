@@ -65,13 +65,12 @@ outputs:
     version: {{ version }}
     build:
       number: {{ build_num }}
+      script_env:
+        - QT={{ qt_version }}  # [build_variant == "normal"]
+        - QT=0                 # [build_variant == "headless"]
       ignore_run_exports:
         # qt5compat is needed for a CMake find_package() call but is not actually used in OpenCV anymore.
         - qt5compat
-        # GStreamer libraries - OpenCV uses them but they don't need explicit run_exports
-        - gst-plugins-base
-        - gstreamer
-        - glib
     run_exports:
       # We are cautiously optimistic here that patch-level updates won't break
       # ABI. However, it sounds like upstream won't guarantee *any* sort of
@@ -89,8 +88,7 @@ outputs:
         - cmake
         - ninja-base
         # pkg-config on win pulls in python
-        # adding here explicitly to pull in the same version as in host
-        - python 3.9                   # [win]
+        - python                        # [win]
       host:
         - python
         - eigen 3.4.0
@@ -103,8 +101,8 @@ outputs:
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}
         - libabseil {{ libabseil }}
-        - glib {{ glib }}                  # [not osx]
-        - libglib {{ glib }}               # [osx]
+        - glib {{ glib }}
+        - glog {{ glog }}
         - libiconv {{ libiconv }}          # [unix]
         - libpng {{ libpng }}
         - libprotobuf {{ libprotobuf }}
@@ -112,7 +110,7 @@ outputs:
         - libwebp-base {{ libwebp }}
         - numpy {{ numpy }}
         - openjpeg {{ openjpeg }}
-        - qtbase-devel 6                 # [build_variant == "normal"]
+        - qtbase-devel {{ qt_version }}  # [build_variant == "normal"]
         - qt5compat                      # [build_variant == "normal"]
         - libgl-devel {{ libgl }}        # [linux]
         - zlib {{ zlib }}
@@ -125,8 +123,7 @@ outputs:
         - ffmpeg                # [not win]
         - freetype
         - harfbuzz
-        - glib                             # [not osx]
-        - libglib                          # [osx]
+        - libglib
         - gst-plugins-base
         - gstreamer
         - hdf5

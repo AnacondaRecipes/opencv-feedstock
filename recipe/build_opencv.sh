@@ -15,11 +15,9 @@ if [[ "${target_platform}" == linux-* ]]; then
 fi
 
 if [[ "$build_variant" == "normal" ]]; then
-    echo "Building normal variant with Qt6"
-    QT="6"
+    echo "Building normal variant with Qt${QT}"
 else
     echo "Building headless variant without Qt"
-    QT="0"
 fi
 
 if [[ "${target_platform}" == osx-* ]]; then
@@ -34,12 +32,6 @@ if [[ "${target_platform}" != "${build_platform}" ]]; then
 fi
 
 export PKG_CONFIG_LIBDIR=$PREFIX/lib
-
-# Set up include paths for GLib and GStreamer on macOS
-if [[ "${target_platform}" == osx-* ]]; then
-    export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/glib-2.0 -I$PREFIX/lib/glib-2.0/include"
-    export CPPFLAGS="$CPPFLAGS -I$PREFIX/include/gstreamer-1.0"
-fi
 
 IS_PYPY=$(${PYTHON} -c "import platform; print(int(platform.python_implementation() == 'PyPy'))")
 
