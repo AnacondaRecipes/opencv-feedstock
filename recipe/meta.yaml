@@ -102,6 +102,8 @@ outputs:
         - jpeg {{ jpeg }}
         - libabseil {{ libabseil }}
         - glib {{ glib }}
+        # libglib is needed to satisfy the linter
+        - libglib {{ glib }}
         - glog {{ glog }}
         - libiconv {{ libiconv }}          # [unix]
         - libpng {{ libpng }}
@@ -117,7 +119,7 @@ outputs:
       run:
         - _openmp_mutex         # [linux]
         - python
-        - {{ pin_compatible('numpy') }}
+        - numpy
         # bounds set through run exports
         - eigen
         - ffmpeg                # [not win]
