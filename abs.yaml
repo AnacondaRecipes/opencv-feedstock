@@ -4,7 +4,3 @@ channels:
   - https://staging.continuum.io/prefect/fs/qtshadertools-feedstock/pr3/88c9288
   - https://staging.continuum.io/prefect/fs/qtdeclarative-feedstock/pr3/80cb92c
   - https://staging.continuum.io/prefect/fs/qt5compat-feedstock/pr3/738f022
-
-extra_labels_for_os:
-  # Ventura failed on Prefect occasionally.
-  osx-arm64: [big-sur]
