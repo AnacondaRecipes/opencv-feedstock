@@ -6,4 +6,5 @@ channels:
   - https://staging.continuum.io/prefect/fs/qt5compat-feedstock/pr3/738f022
 
 extra_labels_for_os:
-  osx-arm64: [ventura]
+  # Ventura failed on Prefect occasionally.
+  osx-arm64: [big-sur]
