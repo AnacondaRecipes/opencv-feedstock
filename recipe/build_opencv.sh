@@ -15,12 +15,9 @@ if [[ "${target_platform}" == linux-* ]]; then
 fi
 
 if [[ "$build_variant" == "normal" ]]; then
-    echo "Building normal variant"
-    QT="6"
+    echo "Building normal variant with Qt${QT}"
 else
-    echo "Building headless variant"
-    QT="0"
-    echo $QT
+    echo "Building headless variant without Qt"
 fi
 
 if [[ "${target_platform}" == osx-* ]]; then
@@ -29,12 +26,10 @@ elif [[ "${target_platform}" == linux-ppc64le ]]; then
     OPENVINO="0"
 fi
 
-
 if [[ "${target_platform}" != "${build_platform}" ]]; then
     CMAKE_ARGS="${CMAKE_ARGS} -DProtobuf_PROTOC_EXECUTABLE=$BUILD_PREFIX/bin/protoc"
     CMAKE_ARGS="${CMAKE_ARGS} -DQT_HOST_PATH=${BUILD_PREFIX}"
 fi
-
 
 export PKG_CONFIG_LIBDIR=$PREFIX/lib
 
@@ -70,6 +65,7 @@ cd build${PY_VER}
 # A number of data files are downloaded when building opencv contrib.
 # We may want to revisit that in a future update.
 # The OPENCV_DOWNLOAD flags are there to make these downloads more robust.
+
 cmake -LAH -G "Ninja"                                                     \
     ${CMAKE_ARGS}                                                         \
     -DCMAKE_BUILD_TYPE="Release"                                          \
@@ -127,6 +123,7 @@ cmake -LAH -G "Ninja"                                                     \
     -DWITH_VTK=0                                                          \
     -DWITH_GTK=0                                                          \
     -DWITH_QT=$QT                                                         \
+    -DWITH_OPENGL=ON                                                      \
     -DWITH_GPHOTO2=0                                                      \
     -DINSTALL_C_EXAMPLES=0                                                \
     -DOPENCV_EXTRA_MODULES_PATH="../opencv_contrib/modules"               \

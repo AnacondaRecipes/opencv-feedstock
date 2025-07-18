@@ -11,7 +11,7 @@
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
 {% set version = "4.10.0" %}
-{% set build_num = "6" %}
+{% set build_num = "7" %}
 {% set major_version = version.split('.')[0] %}
 {% set PY_VER_MAJOR = PY_VER.split('.')[0] %}
 {% set PY_VER_MINOR = PY_VER.split('.')[1] %}
@@ -50,8 +50,8 @@ source:
 
 build:
   number: {{ build_num }}
-  # Package not supported on s390x
-  skip: true  # [s390x]
+  # qtbase isn't available for osx-64
+  skip: True  # [osx and x86_64]
 
 requirements:
   build:
@@ -65,6 +65,9 @@ outputs:
     version: {{ version }}
     build:
       number: {{ build_num }}
+      script_env:
+        - QT={{ qt.split(".")[0] }}  # [build_variant == "normal"]
+        - QT=0                       # [build_variant == "headless"]
       ignore_run_exports:
         # qt5compat is needed for a CMake find_package() call but is not actually used in OpenCV anymore.
         - qt5compat
@@ -79,54 +82,45 @@ outputs:
       - {{ pin_subpackage('opencv-python-headless', max_pin='x.x') }} # [build_variant == 'headless']
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config
         - cmake
         - ninja-base
         # pkg-config on win pulls in python
-        # adding here explicitly to pull in the same version as in host
-        - python                         # [win]
-        - {{ cdt('libselinux') }}        # [linux]
-        - {{ cdt('libxau-devel') }}      # [linux]
-        - {{ cdt('libxcb') }}            # [linux]
-        - {{ cdt('libxdamage-devel') }}  # [linux]
-        - {{ cdt('libxext-devel') }}     # [linux]
-        - {{ cdt('libxfixes-devel') }}   # [linux]
-        - {{ cdt('libxi-devel') }}       # [linux]
-        - {{ cdt('libxrender-devel') }}  # [linux]
-        - {{ cdt('libxxf86vm') }}        # [linux]
-        - {{ cdt('mesa-libegl-devel') }} # [linux]
-        - {{ cdt('mesa-libgbm') }}       # [linux]
-        - {{ cdt('mesa-libgl-devel') }}  # [linux]
-        - {{ cdt('mesa-dri-drivers') }}  # [linux]
+        - python                        # [win]
       host:
         - python
-        - numpy {{ numpy }}
         - eigen 3.4.0
-        - ffmpeg 6                  # [not win]
+        - ffmpeg {{ ffmpeg }}           # [not win]
         - freetype {{ freetype }}
+        - gst-plugins-base {{ gst_plugins_base }}
+        - gstreamer {{ gstreamer }}
         # harfbuzz, glib, gettext are both needed for freetype support
         - harfbuzz {{ harfbuzz }}
-        - libglib {{ glib }}
-        - gstreamer 1.24
-        - gst-plugins-base 1.24
         - hdf5 {{ hdf5 }}
         - jpeg {{ jpeg }}
-        - openjpeg 2.5.2
-        - libiconv 1.16             # [unix]
-        - libpng  {{ libpng }}
-        - libprotobuf 5.29.3
-        - libabseil 20250127.0
+        - libabseil {{ libabseil }}
+        - glib {{ glib }}
+        # libglib is needed to satisfy the linter
+        - libglib {{ glib }}
+        - glog {{ glog }}
+        - libiconv {{ libiconv }}          # [unix]
+        - libpng {{ libpng }}
+        - libprotobuf {{ libprotobuf }}
         - libtiff {{ libtiff }}
         - libwebp-base {{ libwebp }}
-        - qtbase 6                 # [build_variant == "normal"]
-        - qt5compat                # [build_variant == "normal"]
+        - numpy {{ numpy }}
+        - openjpeg {{ openjpeg }}
+        - qtbase-devel {{ qt }}  # [build_variant == "normal"]
+        - qt5compat              # [build_variant == "normal"]
+        - libgl-devel {{ libgl }}  # [linux]
         - zlib {{ zlib }}
       run:
         - _openmp_mutex         # [linux]
         - python
-        - {{ pin_compatible('numpy') }}
+        - numpy
         # bounds set through run exports
         - eigen
         - ffmpeg                # [not win]
@@ -157,16 +151,6 @@ outputs:
           - cmake
           - ninja
           - pip
-          - {{ cdt('mesa-libgl') }}        # [linux]
-          - {{ cdt('libx11') }}            # [linux]
-          - {{ cdt('libxau') }}            # [linux]
-          - {{ cdt('libxext') }}           # [linux]
-          - {{ cdt('libxdamage') }}        # [linux]
-          - {{ cdt('libxfixes') }}         # [linux]
-          - {{ cdt('libxxf86vm') }}        # [linux]
-          - {{ cdt('mesa-dri-drivers') }}  # [linux]
-          - {{ cdt('mesa-libegl') }}       # [linux]
-          - {{ cdt('mesa-libgbm') }}       # [linux]
         files:
           - CMakeLists.txt
           - test.cpp
@@ -175,6 +159,9 @@ outputs:
           - color_palette_alpha.png
           - test_1_c1.jpg
         commands:
+          # Verify pkg-config functionality
+          - export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig                        # [linux]
+          - pkg-config --cflags opencv4                                         # [linux]
           # Verify dynamic libraries on all systems
           {% set win_ver_lib = version|replace(".", "") %}
           # The bot doesn't support multiline jinja, so use

@@ -2,11 +2,9 @@
 setlocal enabledelayedexpansion
 
 if "%build_variant%" == "normal" (
-  echo "Building normal variant"
-  set QT_VERSION=6
+  echo "Building normal variant with Qt%QT%"
 ) else (
-  echo "Building headless variant"
-  set QT_VERSION=0
+  echo "Building headless variant without Qt"
 )
 
 for /F "tokens=1,2 delims=. " %%a in ("%PY_VER%") do (
@@ -111,7 +109,7 @@ cmake -LAH -G "Ninja"                                                           
     -DWITH_VA_INTEL=0                                                               ^
     -DWITH_VTK=0                                                                    ^
     -DWITH_GTK=0                                                                    ^
-    -DWITH_QT=%QT_VERSION%                                                          ^
+    -DWITH_QT=%QT%                                                          ^
     -DWITH_GPHOTO2=0                                                                ^
     -DWITH_WIN32UI=0                                                                ^
     -DINSTALL_C_EXAMPLES=0                                                          ^
