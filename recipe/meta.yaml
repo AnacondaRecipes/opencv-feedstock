@@ -82,6 +82,7 @@ outputs:
       - {{ pin_subpackage('opencv-python-headless', max_pin='x.x') }} # [build_variant == 'headless']
     requirements:
       build:
+        - {{ stdlib('c') }}
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
         - pkg-config
