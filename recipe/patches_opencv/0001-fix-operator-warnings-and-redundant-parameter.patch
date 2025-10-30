@@ -1,0 +1,60 @@
+From 14a4036af2f87e46166d81fece9c81a6d785a08e Mon Sep 17 00:00:00 2001
+From: Ivan Iziumov <iiziumov@anaconda.com>
+Date: Wed, 8 Oct 2025 15:58:42 +0200
+Subject: [PATCH] fix opertaor warnings and redundant parameter
+
+---
+ modules/highgui/src/window_QT.cpp |  3 ---
+ modules/highgui/src/window_QT.h   | 22 +++++++++++-----------
+ 2 files changed, 11 insertions(+), 14 deletions(-)
+
+diff --git a/modules/highgui/src/window_QT.cpp b/modules/highgui/src/window_QT.cpp
+index fa8c5d7801..fe6771c292 100644
+--- a/modules/highgui/src/window_QT.cpp
++++ b/modules/highgui/src/window_QT.cpp
+@@ -529,9 +529,6 @@ static int icvInitSystem(int* c, char** v)
+     //"For any GUI application using Qt, there is precisely one QApplication object"
+     if (!QApplication::instance())
+     {
+-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+-        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+-#endif
+         new QApplication(*c, v);
+         setlocale(LC_NUMERIC,"C");
+ 
+diff --git a/modules/highgui/src/window_QT.h b/modules/highgui/src/window_QT.h
+index 1224ba9d32..99d8bf2f8a 100644
+--- a/modules/highgui/src/window_QT.h
++++ b/modules/highgui/src/window_QT.h
+@@ -96,17 +96,17 @@
+ enum { CV_MODE_NORMAL = 0, CV_MODE_OPENGL = 1 };
+ 
+ //we can change the keyboard shortcuts from here !
+-enum {	shortcut_zoom_normal 	= Qt::CTRL + Qt::Key_Z,
+-        shortcut_zoom_imgRegion = Qt::CTRL + Qt::Key_X,
+-        shortcut_save_img		= Qt::CTRL + Qt::Key_S,
+-        shortcut_copy_clipbrd   = Qt::CTRL + Qt::Key_C,
+-        shortcut_properties_win	= Qt::CTRL + Qt::Key_P,
+-        shortcut_zoom_in 		= Qt::CTRL + Qt::Key_Plus,//QKeySequence(QKeySequence::ZoomIn),
+-        shortcut_zoom_out		= Qt::CTRL + Qt::Key_Minus,//QKeySequence(QKeySequence::ZoomOut),
+-        shortcut_panning_left 	= Qt::CTRL + Qt::Key_Left,
+-        shortcut_panning_right 	= Qt::CTRL + Qt::Key_Right,
+-        shortcut_panning_up 	= Qt::CTRL + Qt::Key_Up,
+-        shortcut_panning_down 	= Qt::CTRL + Qt::Key_Down
++enum {	shortcut_zoom_normal 	= Qt::CTRL | Qt::Key_Z,
++        shortcut_zoom_imgRegion = Qt::CTRL | Qt::Key_X,
++        shortcut_save_img		= Qt::CTRL | Qt::Key_S,
++        shortcut_copy_clipbrd   = Qt::CTRL | Qt::Key_C,
++        shortcut_properties_win	= Qt::CTRL | Qt::Key_P,
++        shortcut_zoom_in 		= Qt::CTRL | Qt::Key_Plus,//QKeySequence(QKeySequence::ZoomIn),
++        shortcut_zoom_out		= Qt::CTRL | Qt::Key_Minus,//QKeySequence(QKeySequence::ZoomOut),
++        shortcut_panning_left 	= Qt::CTRL | Qt::Key_Left,
++        shortcut_panning_right 	= Qt::CTRL | Qt::Key_Right,
++        shortcut_panning_up 	= Qt::CTRL | Qt::Key_Up,
++        shortcut_panning_down 	= Qt::CTRL | Qt::Key_Down
+     };
+ //end enum
+ 
+-- 
+2.51.0
+

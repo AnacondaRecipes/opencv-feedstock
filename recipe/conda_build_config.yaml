@@ -1,3 +1,11 @@
+# https://doc.qt.io/qt-6/windows.html
+c_compiler:        # [win]
+  - vs2022         # [win]
+cxx_compiler:      # [win]
+  - vs2022         # [win]
+c_stdlib_version:  # [win]
+  - 2022.12        # [win]
+
 build_variant:
   - normal
   # As of 5/30/2022 headless is only to be available on the sfe1ed40 channel

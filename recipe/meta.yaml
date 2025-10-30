@@ -10,8 +10,8 @@
 #
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
-{% set version = "4.10.0" %}
-{% set build_num = "7" %}
+{% set version = "4.12.0" %}
+{% set build_num = "0" %}
 {% set major_version = version.split('.')[0] %}
 {% set PY_VER_MAJOR = PY_VER.split('.')[0] %}
 {% set PY_VER_MINOR = PY_VER.split('.')[1] %}
@@ -28,35 +28,27 @@ package:
 
 source:
   - url: https://github.com/opencv/opencv/archive/{{ version }}.tar.gz
-    fn: opencv-{{ version }}.tar.gz
-    sha256: b2171af5be6b26f7a06b1229948bbb2bdaa74fcf5cd097e0af6378fce50a6eb9
+    sha256: 44c106d5bb47efec04e531fd93008b3fcd1d27138985c5baf4eafac0e1ec9e9d
     patches:
       # backport https://github.com/opencv/opencv/pull/21611 (unmerged as of 06/2023)
+      - patches_opencv/0001-fix-operator-warnings-and-redundant-parameter.patch  # [win]
       - patches_opencv/0001-Add-installation-of-pip-metadata-from-cmake.patch
       - patches_opencv/0001-Also-install-metadata-for-opencv-python-headless.patch
       - patches_opencv/0002-delete-lines-that-download-opencv.patch
       - patches_opencv/0003-find-pkgconfig-on-windows.patch
       - patches_opencv/0004-fix-detection-for-protobuf-23.x.patch
+      - patches_opencv/0005-patch-qt6.patch
   - url: https://github.com/opencv/opencv_contrib/archive/{{ version }}.tar.gz
-    fn: opencv_contrib-{{ version }}.tar.gz
-    sha256: 65597f8fb8dc2b876c1b45b928bbcc5f772ddbaf97539bf1b737623d0604cba1
+    sha256: 4197722b4c5ed42b476d42e29beb29a52b6b25c34ec7b4d589c3ae5145fee98e
     folder: opencv_contrib
     patches:
       # Allow attempt to find HDF5 on cross-compile
       - patches_opencv_contrib/cmake_hdf5_xpile.patch
-  - fn: test.avi
-    url: https://github.com/opencv/opencv_extra/raw/master/testdata/highgui/video/VID00003-20100701-2204.avi
+  - url: https://github.com/opencv/opencv_extra/raw/master/testdata/highgui/video/VID00003-20100701-2204.avi
     sha256: 78884f64b564a3b06dc6ee731ed33b60c6d8cd864cea07f21d94ba0f90c7b310
 
 build:
   number: {{ build_num }}
-  # qtbase isn't available for osx-64
-  skip: True  # [osx and x86_64]
-
-requirements:
-  build:
-    - m2-patch  # [win]
-    - patch     # [unix]
 
 outputs:
   - name: {{ package_name }}
@@ -89,14 +81,15 @@ outputs:
         - cmake
         - ninja-base
         # pkg-config on win pulls in python
-        - python                        # [win]
+        - python  # [win]
       host:
         - python
         - eigen 3.4.0
-        - ffmpeg {{ ffmpeg }}           # [not win]
+        - ffmpeg {{ ffmpeg }}
         - freetype {{ freetype }}
         - gst-plugins-base {{ gst_plugins_base }}
         - gstreamer {{ gstreamer }}
+        - libavif {{ libavif }}
         # harfbuzz, glib, gettext are both needed for freetype support
         - harfbuzz {{ harfbuzz }}
         - hdf5 {{ hdf5 }}
@@ -112,7 +105,7 @@ outputs:
         - libtiff {{ libtiff }}
         - libwebp-base {{ libwebp }}
         - numpy {{ numpy }}
-        - openjpeg {{ openjpeg }}
+        - libopenjpeg {{ openjpeg }}
         - qtbase-devel {{ qt }}  # [build_variant == "normal"]
         - qt5compat              # [build_variant == "normal"]
         - libgl-devel {{ libgl }}  # [linux]
@@ -131,7 +124,7 @@ outputs:
         - gstreamer
         - hdf5
         - jpeg            # [not win]
-        - openjpeg
+        - libopenjpeg
         - libiconv        # [unix]
         - libpng
         - libprotobuf
@@ -143,13 +136,13 @@ outputs:
 
     test:
         source_files:
-          - test.avi
+          - VID00003-20100701-2204.avi
         requires:
           - {{ compiler('c') }}
           - {{ compiler('cxx') }}
           - pkg-config                     # [not win]
           - cmake
-          - ninja
+          - ninja-base
           - pip
         files:
           - CMakeLists.txt
@@ -295,14 +288,14 @@ outputs:
   {% endif %}
 
 about:
-  home: https://opencv.org/
+  home: https://opencv.org
   license: Apache-2.0
   license_family: Apache
   license_file: LICENSE
   summary: Computer vision and machine learning software library.
   description: Computer vision and machine learning software library.
   dev_url: https://github.com/opencv/opencv
-  doc_url: https://docs.opencv.org/{{ major_version }}.x/
+  doc_url: https://docs.opencv.org/{{ major_version }}.x
 
 extra:
   skip-lints:
