@@ -1,3 +1,4 @@
 *.pyc
 
 build_artefacts
+.DS_Store

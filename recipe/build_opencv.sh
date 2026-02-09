@@ -13,7 +13,9 @@ if [[ "${target_platform}" == linux-* ]]; then
     export CXXFLAGS="$CXXFLAGS -D__STDC_CONSTANT_MACROS"
     OPENMP="-DWITH_OPENMP=1"
 elif [[ "${target_platform}" == osx-* ]]; then
-    CMAKE_ARGS="${CMAKE_ARGS} -D_LIBCPP_DISABLE_AVAILABILITY=ON -DOPENCV_SKIP_LINK_NO_UNDEFINED=ON -DOPENCV_SKIP_LINK_AS_NEEDED=ON -DCPU_BASELINE_DISABLE=NEON_BF16"
+    # We disable KleidiCV as clang has problem during compilation of 
+    # its sections of code: arm64-apple-darwin20.0: error: clang frontend command failed with exit code 139 (use -v to see invocation)
+    CMAKE_ARGS="${CMAKE_ARGS} -D_LIBCPP_DISABLE_AVAILABILITY=ON -DOPENCV_SKIP_LINK_NO_UNDEFINED=ON -DOPENCV_SKIP_LINK_AS_NEEDED=ON -DCPU_BASELINE_DISABLE=NEON_BF16 -DKLEIDICV_ENABLE_SVE2=OFF"
     V4L="0"
 fi
 
