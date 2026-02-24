@@ -11,7 +11,7 @@
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
 {% set version = "4.13.0" %}
-{% set build_num = "0" %}
+{% set build_num = "1" %}
 {% set major_version = version.split('.')[0] %}
 {% set PY_VER_MAJOR = PY_VER.split('.')[0] %}
 {% set PY_VER_MINOR = PY_VER.split('.')[1] %}
@@ -85,7 +85,7 @@ outputs:
         - eigen 3.4.0
         # Request to rebuild with the latest ffmpeg
         # which is not reflected in cbc.yaml yet
-        - ffmpeg 8.0.1
+        - ffmpeg {{ ffmpeg }}
         - freetype {{ freetype }}
         - gst-plugins-base {{ gst_plugins_base }}
         - gstreamer {{ gstreamer }}
@@ -106,8 +106,8 @@ outputs:
         - libwebp-base {{ libwebp_base }}
         - numpy {{ numpy }}
         - libopenjpeg {{ openjpeg }}
-        - qtbase-devel {{ qt }}  # [build_variant == "normal"]
-        - qt5compat              # [build_variant == "normal"]
+        - qtbase-devel {{ qt }}    # [build_variant == "normal"]
+        - qt5compat {{ qt }}       # [build_variant == "normal"]
         - libgl-devel {{ libgl }}  # [linux]
         - libzlib {{ libzlib }}
       run:
