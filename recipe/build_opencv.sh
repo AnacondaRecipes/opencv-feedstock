@@ -128,7 +128,7 @@ cmake -LAH -B build -G "Ninja" -S .                                             
     -DWITH_QT=$QT                                                                       \
     -DQT_SKIP_DEFAULT_TESTCASE_DIRS=0                                                   \
     -DWITH_QTTEST=OFF                                                                   \
-    -DWITH_OPENGL=ON                                                                    \
+    -DWITH_OPENGL=${USE_OPENGL}                                                         \
     -DWITH_GPHOTO2=0                                                                    \
     -DWITH_OBSENSOR=0                                                                   \
     -DINSTALL_C_EXAMPLES=0                                                              \
