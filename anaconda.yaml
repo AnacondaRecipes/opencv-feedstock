@@ -6,3 +6,4 @@ upstream_sources:
       - libopencv
       - opencv
       - py-opencv
+      - opencv-python-headless
