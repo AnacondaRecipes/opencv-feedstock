@@ -16,11 +16,7 @@
 {% set PY_VER_MAJOR = PY_VER.split('.')[0] %}
 {% set PY_VER_MINOR = PY_VER.split('.')[1] %}
 
-# {% if build_variant == "headless" %}
-# {%   set package_name = "opencv-python-headless" %}
-# {% else %}
 {%   set package_name = "opencv" %}
-# {% endif %}
 
 package:
   name: opencv-suite
@@ -155,6 +151,10 @@ outputs:
           - color_palette_alpha.png
           - test_1_c1.jpg
         script_env:
+          # The testing script_env should match the build script_env. 
+          # See: https://docs.conda.io/projects/conda-build/en/stable/resources/define-metadata.html#use-environment-variables
+          - QT={{ qt.split(".")[0] }}  # [build_variant == "normal"]
+          - QT=0                       # [build_variant == "headless"]
           - USE_OPENGL=ON              # [build_variant == "normal" and (linux)]
           - USE_OPENGL_OFF             # [build_variant == "headless" or not (linux)]
         commands:
