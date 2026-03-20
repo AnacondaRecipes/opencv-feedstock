@@ -11,16 +11,16 @@
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
 {% set version = "4.13.0" %}
-{% set build_num = "1" %}
+# give higher priority to the qt variant
+{% set build_num = 2 %}
+{% if build_variant == "normal" %}
+{% set build_num = 100 + build_num %}
+{% endif %}
 {% set major_version = version.split('.')[0] %}
 {% set PY_VER_MAJOR = PY_VER.split('.')[0] %}
 {% set PY_VER_MINOR = PY_VER.split('.')[1] %}
 
-{% if build_variant == "headless" %}
-{%   set package_name = "opencv-python-headless" %}
-{% else %}
 {%   set package_name = "opencv" %}
-{% endif %}
 
 package:
   name: opencv-suite
@@ -55,12 +55,13 @@ outputs:
     version: {{ version }}
     build:
       number: {{ build_num }}
+      string: qt{{ qt.replace('.', '') }}_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "normal"]
+      string: headless_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "headless"]
       script_env:
         - QT={{ qt.split(".")[0] }}  # [build_variant == "normal"]
         - QT=0                       # [build_variant == "headless"]
-      ignore_run_exports:
-        # qt5compat is needed for a CMake find_package() call but is not actually used in OpenCV anymore.
-        - qt5compat
+        - USE_OPENGL=ON              # [build_variant == "normal" and (linux)]
+        - USE_OPENGL_OFF             # [build_variant == "headless" or not (linux)]
     run_exports:
       # We are cautiously optimistic here that patch-level updates won't break
       # ABI. However, it sounds like upstream won't guarantee *any* sort of
@@ -68,8 +69,7 @@ outputs:
       #
       #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
       #
-      - {{ pin_subpackage('opencv', max_pin='x.x') }} # [build_variant == 'normal']
-      - {{ pin_subpackage('opencv-python-headless', max_pin='x.x') }} # [build_variant == 'headless']
+      - {{ pin_subpackage(package_name, exact=True) }}
     requirements:
       build:
         - {{ stdlib('c') }}
@@ -115,7 +115,6 @@ outputs:
         - python
         - numpy
         # bounds set through run exports
-        - eigen
         - ffmpeg                # [not win]
         - freetype
         - harfbuzz
@@ -151,6 +150,7 @@ outputs:
           - run_py_test.py
           - color_palette_alpha.png
           - test_1_c1.jpg
+
         commands:
           # Verify pkg-config functionality
           - export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig                        # [linux]
@@ -241,7 +241,6 @@ outputs:
           - test $(pip list | grep opencv-python | wc -l) -eq 2  # [unix]
           - test $(pip list | grep opencv-python-headless | wc -l) -eq 1  # [unix]
 
-  {% if build_variant == "normal" %}
   # This recipe has merged the outputs for the compiled libraries with the
   # python bindings that used to be vendored as libopencv and py-opencv. This
   # was done to try to improve maintainibility. The following two output
@@ -254,6 +253,8 @@ outputs:
     version: {{ version }}
     build:
       number: {{ build_num }}
+      string: qt{{ qt.replace('.', '') }}_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "normal"]
+      string: headless_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "headless"]
     run_exports:
       # We are cautiously optimistic here that patch-level updates won't break
       # ABI. However, it sounds like upstream won't guarantee *any* sort of
@@ -261,12 +262,12 @@ outputs:
       #
       #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
       #
-      - {{ pin_subpackage('libopencv', max_pin='x.x') }}
+      - {{ pin_subpackage('libopencv', exact=True) }}
     requirements:
       host:
-        - {{ package_name }} =={{ version }}
+        - {{ pin_subpackage(package_name, exact=True) }}
       run:
-        - {{ package_name }} =={{ version }}
+        - {{ pin_subpackage(package_name, exact=True) }}
     test:
       commands:
         - echo "tested in other outputs"
@@ -277,15 +278,16 @@ outputs:
     version: {{ version }}
     build:
       number: {{ build_num }}
+      string: qt{{ qt.replace('.', '') }}_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "normal"]
+      string: headless_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "headless"]
     requirements:
       host:
-        - {{ package_name }} =={{ version }}
+        - {{ pin_subpackage(package_name, exact=True) }}
       run:
-        - {{ package_name }} =={{ version }}
+        - {{ pin_subpackage(package_name, exact=True) }}
     test:
       commands:
         - echo "tested in other outputs"
-  {% endif %}
 
 about:
   home: https://opencv.org
