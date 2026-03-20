@@ -8,5 +8,11 @@ c_stdlib_version:  # [win]
 
 build_variant:
   - normal
-  # As of 5/30/2022 headless is only to be available on the sfe1ed40 channel
   - headless
+
+libabseil:
+  - 20250814.1
+libprotobuf:
+  - 6.33.0
+
+

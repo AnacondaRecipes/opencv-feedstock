@@ -11,7 +11,11 @@
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
 {% set version = "4.13.0" %}
-{% set build_num = "2" %}
+# give higher priority to the qt variant
+{% set build_num = 2 %}
+{% if build_variant == "normal" %}
+{% set build_num = 100 + build_num %}
+{% endif %}
 {% set major_version = version.split('.')[0] %}
 {% set PY_VER_MAJOR = PY_VER.split('.')[0] %}
 {% set PY_VER_MINOR = PY_VER.split('.')[1] %}
@@ -58,9 +62,6 @@ outputs:
         - QT=0                       # [build_variant == "headless"]
         - USE_OPENGL=ON              # [build_variant == "normal" and (linux)]
         - USE_OPENGL_OFF             # [build_variant == "headless" or not (linux)]
-      ignore_run_exports:
-        # qt5compat is needed for a CMake find_package() call but is not actually used in OpenCV anymore.
-        - qt5compat
     run_exports:
       # We are cautiously optimistic here that patch-level updates won't break
       # ABI. However, it sounds like upstream won't guarantee *any* sort of
@@ -114,7 +115,6 @@ outputs:
         - python
         - numpy
         # bounds set through run exports
-        - eigen
         - ffmpeg                # [not win]
         - freetype
         - harfbuzz
@@ -150,13 +150,7 @@ outputs:
           - run_py_test.py
           - color_palette_alpha.png
           - test_1_c1.jpg
-        script_env:
-          # The testing script_env should match the build script_env. 
-          # See: https://docs.conda.io/projects/conda-build/en/stable/resources/define-metadata.html#use-environment-variables
-          - QT={{ qt.split(".")[0] }}  # [build_variant == "normal"]
-          - QT=0                       # [build_variant == "headless"]
-          - USE_OPENGL=ON              # [build_variant == "normal" and (linux)]
-          - USE_OPENGL_OFF             # [build_variant == "headless" or not (linux)]
+
         commands:
           # Verify pkg-config functionality
           - export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig                        # [linux]
