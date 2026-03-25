@@ -12,7 +12,7 @@
 # much easier, at the expense of a few MBs in the 'lib' package.
 {% set version = "4.13.0" %}
 # give higher priority to the qt variant
-{% set build_num = 2 %}
+{% set build_num = 3 %}
 {% if build_variant == "normal" %}
 {% set build_num = 100 + build_num %}
 {% endif %}
