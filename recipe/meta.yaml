@@ -69,7 +69,7 @@ outputs:
       #
       #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
       #
-      - {{ pin_subpackage(package_name, exact=True) }}
+      - {{ pin_subpackage(package_name, max_pin='x.x') }}
     requirements:
       build:
         - {{ stdlib('c') }}
@@ -262,7 +262,7 @@ outputs:
       #
       #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
       #
-      - {{ pin_subpackage('libopencv', exact=True) }}
+      - {{ pin_subpackage('libopencv', max_pin='x.x') }}
     requirements:
       host:
         - {{ pin_subpackage(package_name, exact=True) }}
