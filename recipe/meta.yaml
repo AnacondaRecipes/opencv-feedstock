@@ -74,7 +74,6 @@ outputs:
         #
         - {{ pin_subpackage(package_name, max_pin='x.x') }} qt* # [build_variant == "normal"]
         - {{ pin_subpackage(package_name, max_pin='x.x') }} headless* # [build_variant == "headless"]
-        - {{ package_name }} >={{ version }}
     requirements:
       build:
         - {{ stdlib('c') }}
