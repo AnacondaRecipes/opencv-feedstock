@@ -62,14 +62,18 @@ outputs:
         - QT=0                       # [build_variant == "headless"]
         - USE_OPENGL=ON              # [build_variant == "normal" and (linux)]
         - USE_OPENGL_OFF             # [build_variant == "headless" or not (linux)]
-    run_exports:
-      # We are cautiously optimistic here that patch-level updates won't break
-      # ABI. However, it sounds like upstream won't guarantee *any* sort of
-      # binary compatibility any longer. See also
-      #
-      #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
-      #
-      - {{ pin_subpackage(package_name, max_pin='x.x') }}
+      ignore_run_exports:
+        # qt5compat is needed for a CMake find_package() call but is not actually used in OpenCV anymore.
+        - qt5compat
+      run_exports:
+        # We are cautiously optimistic here that patch-level updates won't break
+        # ABI. However, it sounds like upstream won't guarantee *any* sort of
+        # binary compatibility any longer. See also
+        #
+        #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
+        #
+        - {{ pin_subpackage(package_name, max_pin='x.x') }} qt* # [build_variant == "normal"]
+        - {{ pin_subpackage(package_name, max_pin='x.x') }} headless* # [build_variant == "headless"]
     requirements:
       build:
         - {{ stdlib('c') }}
@@ -255,14 +259,15 @@ outputs:
       number: {{ build_num }}
       string: qt{{ qt.replace('.', '') }}_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "normal"]
       string: headless_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "headless"]
-    run_exports:
-      # We are cautiously optimistic here that patch-level updates won't break
-      # ABI. However, it sounds like upstream won't guarantee *any* sort of
-      # binary compatibility any longer. See also
-      #
-      #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
-      #
-      - {{ pin_subpackage('libopencv', max_pin='x.x') }}
+      run_exports:
+        # We are cautiously optimistic here that patch-level updates won't break
+        # ABI. However, it sounds like upstream won't guarantee *any* sort of
+        # binary compatibility any longer. See also
+        #
+        #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
+        #
+        - {{ pin_subpackage('libopencv', max_pin='x.x') }} qt* # [build_variant == "normal"]
+        - {{ pin_subpackage('libopencv', max_pin='x.x') }} headless* # [build_variant == "headless"]
     requirements:
       host:
         - {{ pin_subpackage(package_name, exact=True) }}
@@ -280,6 +285,15 @@ outputs:
       number: {{ build_num }}
       string: qt{{ qt.replace('.', '') }}_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "normal"]
       string: headless_py{{ PY_VER_MAJOR }}{{ PY_VER_MINOR }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [build_variant == "headless"]
+      run_exports:
+        # We are cautiously optimistic here that patch-level updates won't break
+        # ABI. However, it sounds like upstream won't guarantee *any* sort of
+        # binary compatibility any longer. See also
+        #
+        #     https://github.com/opencv/opencv/wiki/OE-4.-OpenCV-4
+        #
+        - {{ pin_subpackage('py-opencv', max_pin='x.x') }} qt* # [build_variant == "normal"]
+        - {{ pin_subpackage('py-opencv', max_pin='x.x') }} headless* # [build_variant == "headless"]
     requirements:
       host:
         - {{ pin_subpackage(package_name, exact=True) }}
