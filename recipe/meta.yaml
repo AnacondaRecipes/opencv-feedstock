@@ -61,7 +61,7 @@ outputs:
         - QT={{ qt.split(".")[0] }}  # [build_variant == "normal"]
         - QT=0                       # [build_variant == "headless"]
         - USE_OPENGL=ON              # [build_variant == "normal" and (linux)]
-        - USE_OPENGL_OFF             # [build_variant == "headless" or not (linux)]
+        - USE_OPENGL=OFF             # [build_variant == "headless" or not (linux)]
       ignore_run_exports:
         # qt5compat is needed for a CMake find_package() call but is not actually used in OpenCV anymore.
         - qt5compat
