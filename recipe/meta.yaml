@@ -12,7 +12,7 @@
 # much easier, at the expense of a few MBs in the 'lib' package.
 {% set version = "4.13.0" %}
 # give higher priority to the qt variant
-{% set build_num = 3 %}
+{% set build_num = 5 %}
 {% if build_variant == "normal" %}
 {% set build_num = 100 + build_num %}
 {% endif %}
@@ -94,8 +94,8 @@ outputs:
         # Temporary pin until the global gstreamer pin is updated.
         # OpenCV should be built against 1.28.1 specifically because this
         # release contains the CVE fixes we want to pick up.
-        - gst-plugins-base 1.28.1
-        - gstreamer 1.28.1
+        - gst-plugins-base {{ gst_plugins_base }}
+        - gstreamer {{ gstreamer }}
         - libavif {{ libavif }}
         # harfbuzz, glib, gettext are both needed for freetype support
         - harfbuzz {{ harfbuzz }}
