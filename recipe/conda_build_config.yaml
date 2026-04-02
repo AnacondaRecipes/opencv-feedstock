@@ -11,13 +11,3 @@ build_variant:
   - headless
 
 
-# Temporary pin until the global gstreamer pin is updated.
-# OpenCV should be built against 1.28.1 specifically because this
-# release contains the CVE fixes we want to pick up.q
-gst_plugins_base:
-  - '1.28.1'
-
-gstreamer:
-  - '1.28.1'
-
-
