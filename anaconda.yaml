@@ -2,8 +2,9 @@ anaconda_config_version: 1
 upstream_sources:
   - github:
       identifier: opencv/opencv
+      use_max_tag: true
+      include_regex: ^\d+\.\d+\.\d+$
     packages:
       - libopencv
       - opencv
       - py-opencv
-      - opencv-python-headless
