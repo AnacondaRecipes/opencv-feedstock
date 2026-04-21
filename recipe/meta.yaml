@@ -13,7 +13,7 @@
 {% set version = "4.13.0" %}
 # give higher priority to the qt variant
 
-{% set build_num = 5 %}
+{% set build_num = 6 %}
 
 {% if build_variant == "normal" %}
 {% set build_num = 100 + build_num %}
