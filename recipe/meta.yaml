@@ -13,7 +13,7 @@
 {% set version = "4.13.0" %}
 # give higher priority to the qt variant
 
-{% set build_num = 6 %}
+{% set build_num = 7 %}
 
 {% if build_variant == "normal" %}
 {% set build_num = 100 + build_num %}
@@ -116,8 +116,9 @@ outputs:
         - qt5compat {{ qt }}       # [build_variant == "normal"]
         - libgl-devel {{ libgl }}  # [linux]
         - libzlib {{ libzlib }}
+        - libgomp # [linux]
       run:
-        - _openmp_mutex         # [linux]
+        - libgomp # [linux]
         - python
         - numpy
         # bounds set through run exports
