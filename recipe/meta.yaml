@@ -13,7 +13,7 @@
 {% set version = "4.13.0" %}
 # give higher priority to the qt variant
 
-{% set build_num = 7 %}
+{% set build_num = 8 %}
 
 {% if build_variant == "normal" %}
 {% set build_num = 100 + build_num %}
@@ -99,7 +99,7 @@ outputs:
         # harfbuzz, glib, gettext are both needed for freetype support
         - harfbuzz {{ harfbuzz }}
         - hdf5 {{ hdf5 }}
-        - jpeg {{ jpeg }}
+        - libjpeg-turbo {{ libjpeg_turbo }}
         - libabseil {{ libabseil }}
         - glib {{ glib }}
         # libglib is needed to satisfy the linter
@@ -129,7 +129,7 @@ outputs:
         - gst-plugins-base
         - gstreamer
         - hdf5
-        - jpeg            # [not win]
+        - libjpeg-turbo   # [not win]
         - libopenjpeg
         - libiconv        # [unix]
         - libpng
