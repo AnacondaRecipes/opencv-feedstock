@@ -13,7 +13,7 @@
 {% set version = "4.13.0" %}
 # give higher priority to the qt variant
 
-{% set build_num = 8 %}
+{% set build_num = 9 %}
 
 {% if build_variant == "normal" %}
 {% set build_num = 100 + build_num %}
@@ -100,14 +100,14 @@ outputs:
         - harfbuzz {{ harfbuzz }}
         - hdf5 {{ hdf5 }}
         - libjpeg-turbo {{ libjpeg_turbo }}
-        - libabseil {{ libabseil }}
+        - libabseil 20260526.0
         - glib {{ glib }}
         # libglib is needed to satisfy the linter
         - libglib {{ glib }}
         - glog {{ glog }}
         - libiconv {{ libiconv }}          # [unix]
         - libpng {{ libpng }}
-        - libprotobuf {{ libprotobuf }}
+        - libprotobuf 7.35.1
         - libtiff {{ libtiff }}
         - libwebp-base {{ libwebp_base }}
         - numpy {{ numpy }}
