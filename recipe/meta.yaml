@@ -10,10 +10,10 @@
 #
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
-{% set version = "4.13.0" %}
+{% set version = "4.14.0" %}
 # give higher priority to the qt variant
 
-{% set build_num = 9 %}
+{% set build_num = 0 %}
 
 {% if build_variant == "normal" %}
 {% set build_num = 100 + build_num %}
@@ -30,7 +30,7 @@ package:
 
 source:
   - url: https://github.com/opencv/opencv/archive/{{ version }}.tar.gz
-    sha256: 1d40ca017ea51c533cf9fd5cbde5b5fe7ae248291ddf2af99d4c17cf8e13017d
+    sha256: ee8fb9b30eb60850431b4656447080e3737b56e45719c92b67f245950609f86e
     patches:
       # backport https://github.com/opencv/opencv/pull/21611 (unmerged as of 06/2023)
       - patches_opencv/0001-fix-operator-warnings-and-redundant-parameter.patch  # [win]
@@ -39,7 +39,7 @@ source:
       - patches_opencv/0003-find-pkgconfig-on-windows.patch
       - patches_opencv/0004-fix-detection-for-protobuf-23.x.patch
   - url: https://github.com/opencv/opencv_contrib/archive/{{ version }}.tar.gz
-    sha256: 1e0077a4fd2960a7d2f4c9e49d6ba7bb891cac2d1be36d7e8e47aa97a9d1039b
+    sha256: 4f17abd1bc7f88e19c3380c8de7cbf2d863aced5b5ee8d8934cc7902b67d42c9
     folder: opencv_contrib
     patches:
       # Allow attempt to find HDF5 on cross-compile
