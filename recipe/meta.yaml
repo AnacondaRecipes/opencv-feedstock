@@ -39,7 +39,7 @@ source:
       - patches_opencv/0003-find-pkgconfig-on-windows.patch
       - patches_opencv/0004-fix-detection-for-protobuf-23.x.patch
   - url: https://github.com/opencv/opencv_contrib/archive/{{ version }}.tar.gz
-    sha256: 1e0077a4fd2960a7d2f4c9e49d6ba7bb891cac2d1be36d7e8e47aa97a9d1039b
+    sha256: 4f17abd1bc7f88e19c3380c8de7cbf2d863aced5b5ee8d8934cc7902b67d42c9
     folder: opencv_contrib
     patches:
       # Allow attempt to find HDF5 on cross-compile
