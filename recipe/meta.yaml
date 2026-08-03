@@ -30,7 +30,7 @@ package:
 
 source:
   - url: https://github.com/opencv/opencv/archive/{{ version }}.tar.gz
-    sha256: 4f17abd1bc7f88e19c3380c8de7cbf2d863aced5b5ee8d8934cc7902b67d42c9
+    sha256: ee8fb9b30eb60850431b4656447080e3737b56e45719c92b67f245950609f86e
     patches:
       # backport https://github.com/opencv/opencv/pull/21611 (unmerged as of 06/2023)
       - patches_opencv/0001-fix-operator-warnings-and-redundant-parameter.patch  # [win]
