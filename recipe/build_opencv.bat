@@ -52,6 +52,8 @@ rem We may want to revisit that in a future update.
 rem The OPENCV_DOWNLOAD flags are there to make these downloads more robust.
 rem ENABLE_PRECOMPILED_HEADERS is deprecated on win and set to OFF as such.
 
+rem Defaults has no OpenEXR build, so WITH_OPENEXR is off: OpenCV 5.x fails
+rem configuration verification when a requested dependency is not found.
 cmake -LAH -B build -G "Ninja" -S .                                          ^
     -DCMAKE_BUILD_TYPE="Release"                                             ^
     -DCMAKE_INSTALL_PREFIX=%UNIX_LIBRARY_PREFIX%                             ^
@@ -88,7 +90,7 @@ cmake -LAH -B build -G "Ninja" -S .                                          ^
     -DWEBP_INCLUDE_DIR=%PREFIX%/Library/include                              ^
     -DWITH_OPENJPEG=ON                                                       ^
     -DWITH_JASPER=0                                                          ^
-    -DWITH_OPENEXR=ON                                                        ^
+    -DWITH_OPENEXR=OFF                                                       ^
     -DWITH_PROTOBUF=1                                                        ^
     -DBUILD_PROTOBUF=0                                                       ^
     -DPROTOBUF_UPDATE_FILES=1                                                ^
@@ -104,6 +106,7 @@ cmake -LAH -B build -G "Ninja" -S .                                          ^
     -DWITH_OPENNI=0                                                          ^
     -DWITH_HDF5=1                                                            ^
     -DWITH_FFMPEG=1                                                          ^
+    -DOPENCV_FFMPEG_SKIP_DOWNLOAD=1                                          ^
     -DWITH_TENGINE=0                                                         ^
     -DWITH_GSTREAMER=0                                                       ^
     -DWITH_MATLAB=0                                                          ^
