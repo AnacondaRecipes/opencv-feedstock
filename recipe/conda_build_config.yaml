@@ -10,4 +10,5 @@ build_variant:
   - normal
   - headless
 
-
+ffmpeg:
+  - 9.0.2

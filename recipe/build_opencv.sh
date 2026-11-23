@@ -68,6 +68,8 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PREFIX/lib/pkgconfig
 # We may want to revisit that in a future update.
 # The OPENCV_DOWNLOAD flags are there to make these downloads more robust.
 
+# Defaults has no OpenEXR build, so WITH_OPENEXR is off: OpenCV 5.x fails
+# configuration verification when a requested dependency is not found.
 cmake -LAH -B build -G "Ninja" -S .                                                     \
     ${CMAKE_ARGS}                                                                       \
     -DCMAKE_BUILD_TYPE="Release"                                                        \
@@ -101,7 +103,7 @@ cmake -LAH -B build -G "Ninja" -S .                                             
     -DWITH_WEBP=ON                                                                      \
     -DWITH_OPENJPEG=ON                                                                  \
     -DWITH_JASPER=0                                                                     \
-    -DWITH_OPENEXR=ON                                                                   \
+    -DWITH_OPENEXR=OFF                                                                  \
     -DWITH_PROTOBUF=1                                                                   \
     -DBUILD_PROTOBUF=0                                                                  \
     -DPROTOBUF_UPDATE_FILES=1                                                           \

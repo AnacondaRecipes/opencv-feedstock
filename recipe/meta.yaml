@@ -10,7 +10,7 @@
 #
 # By putting all the generated files in 1 package, this makes the build process
 # much easier, at the expense of a few MBs in the 'lib' package.
-{% set version = "4.14.0" %}
+{% set version = "5.1.0" %}
 # give higher priority to the qt variant
 
 {% set build_num = 0 %}
@@ -30,7 +30,7 @@ package:
 
 source:
   - url: https://github.com/opencv/opencv/archive/{{ version }}.tar.gz
-    sha256: ee8fb9b30eb60850431b4656447080e3737b56e45719c92b67f245950609f86e
+    sha256: 638c1dae7e37e45afea21aa217dc667ad7cf57acc66cdf652c074f1e0e5ad6d2
     patches:
       # backport https://github.com/opencv/opencv/pull/21611 (unmerged as of 06/2023)
       - patches_opencv/0001-fix-operator-warnings-and-redundant-parameter.patch  # [win]
@@ -38,12 +38,16 @@ source:
       - patches_opencv/0001-Also-install-metadata-for-opencv-python-headless.patch
       - patches_opencv/0003-find-pkgconfig-on-windows.patch
       - patches_opencv/0004-fix-detection-for-protobuf-23.x.patch
+      # 16-bit AVIF encode path: fix CV_CheckEQ overload ambiguity on MSVC
+      - patches_opencv/0008-imgcodecs-avif-fix-CV_CheckEq-overload-ambiguity-on-MSVC.patch
   - url: https://github.com/opencv/opencv_contrib/archive/{{ version }}.tar.gz
-    sha256: 4f17abd1bc7f88e19c3380c8de7cbf2d863aced5b5ee8d8934cc7902b67d42c9
+    sha256: 6aee68285f0e7b7bf77d3656bc6568820c6f15704860fc0922def357d40ebeff
     folder: opencv_contrib
     patches:
       # Allow attempt to find HDF5 on cross-compile
       - patches_opencv_contrib/cmake_hdf5_xpile.patch
+      # freetype module must not overwrite the HARFBUZZ_* cache vars used by imgproc
+      - patches_opencv_contrib/0001-freetype-use-private-pkg-config-prefix-for-harfbuzz.patch
   - url: https://github.com/opencv/opencv_extra/raw/master/testdata/highgui/video/VID00003-20100701-2204.avi
     sha256: 78884f64b564a3b06dc6ee731ed33b60c6d8cd864cea07f21d94ba0f90c7b310
 
@@ -65,7 +69,7 @@ outputs:
         - USE_OPENGL=ON              # [build_variant == "normal" and (linux)]
         - USE_OPENGL=OFF             # [build_variant == "headless" or not (linux)]
       ignore_run_exports:
-        # qt5compat is needed for a CMake find_package() call but is not actually used in OpenCV anymore.
+        # cvv's CMake does a REQUIRED find_package of Qt Core5Compat; not used in OpenCV itself
         - qt5compat
       run_exports:
         # We are cautiously optimistic here that patch-level updates won't break
@@ -89,8 +93,7 @@ outputs:
       host:
         - python
         - eigen 3.4.0
-        # Request to rebuild with the latest ffmpeg
-        # which is not reflected in cbc.yaml yet
+        # OpenCV 5.1 supports FFmpeg 9.x; pin the newest build on defaults
         - ffmpeg {{ ffmpeg }}
         - freetype {{ freetype }}
         - gst-plugins-base {{ gst_plugins_base }}
@@ -161,16 +164,17 @@ outputs:
         commands:
           # Verify pkg-config functionality
           - export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig                        # [linux]
-          - pkg-config --cflags opencv4                                         # [linux]
+          - pkg-config --cflags opencv5                                         # [linux]
           # Verify dynamic libraries on all systems
           {% set win_ver_lib = version|replace(".", "") %}
           # The bot doesn't support multiline jinja, so use
           # single line jinja.
           {% set opencv_libs = [] %}
+          # OpenCV 5.0 renamed calib3d -> calib and features2d -> features, merged aruco
+          # into objdetect and removed mcc; geometry, ptcloud, signal and xstereo are new.
           {{ opencv_libs.append("alphamat") or "" }}
-          {{ opencv_libs.append("aruco") or "" }}
           {{ opencv_libs.append("bgsegm") or "" }}
-          {{ opencv_libs.append("calib3d") or "" }}
+          {{ opencv_libs.append("calib") or "" }}
           {{ opencv_libs.append("ccalib") or "" }}
           {{ opencv_libs.append("core") or "" }}
           {{ opencv_libs.append("datasets") or "" }}
@@ -179,10 +183,12 @@ outputs:
           {{ opencv_libs.append("dnn") or "" }}
           {{ opencv_libs.append("dpm") or "" }}
           {{ opencv_libs.append("face") or "" }}
-          {{ opencv_libs.append("features2d") or "" }}
+          {{ opencv_libs.append("features") or "" }}
           {{ opencv_libs.append("flann") or "" }}
+          {{ opencv_libs.append("freetype") or "" }}
           {{ opencv_libs.append("fuzzy") or "" }}
           {{ opencv_libs.append("gapi") or "" }}
+          {{ opencv_libs.append("geometry") or "" }}
           {{ opencv_libs.append("hfs") or "" }}
           {{ opencv_libs.append("highgui") or "" }}
           {{ opencv_libs.append("img_hash") or "" }}
@@ -190,19 +196,20 @@ outputs:
           {{ opencv_libs.append("imgproc") or "" }}
           {{ opencv_libs.append("intensity_transform") or "" }}
           {{ opencv_libs.append("line_descriptor") or "" }}
-          {{ opencv_libs.append("mcc") or "" }}
           {{ opencv_libs.append("ml") or "" }}
           {{ opencv_libs.append("objdetect") or "" }}
           {{ opencv_libs.append("optflow") or "" }}
           {{ opencv_libs.append("phase_unwrapping") or "" }}
           {{ opencv_libs.append("photo") or "" }}
           {{ opencv_libs.append("plot") or "" }}
+          {{ opencv_libs.append("ptcloud") or "" }}
           {{ opencv_libs.append("quality") or "" }}
           {{ opencv_libs.append("rapid") or "" }}
           {{ opencv_libs.append("reg") or "" }}
           {{ opencv_libs.append("rgbd") or "" }}
           {{ opencv_libs.append("saliency") or "" }}
           {{ opencv_libs.append("shape") or "" }}
+          {{ opencv_libs.append("signal") or "" }}
           {{ opencv_libs.append("stereo") or "" }}
           {{ opencv_libs.append("stitching") or "" }}
           {{ opencv_libs.append("structured_light") or "" }}
@@ -218,14 +225,14 @@ outputs:
           {{ opencv_libs.append("ximgproc") or "" }}
           {{ opencv_libs.append("xobjdetect") or "" }}
           {{ opencv_libs.append("xphoto") or "" }}
-          {{ opencv_libs.append("freetype") or "" }}
+          {{ opencv_libs.append("xstereo") or "" }}
           # Add runtime path of libEGL.so.1 so ocv libraries can find it as they're loaded in.
           # This must be done before the python interpreter starts up.
           - export LD_LIBRARY_PATH="${PREFIX}/${BUILD/conda_cos7/conda}/sysroot/usr/lib64:${LD_LIBRARY_PATH}"  # [linux]
           - python run_import_test.py
           - export MACOSX_DEPLOYMENT_TARGET={{ MACOSX_DEPLOYMENT_TARGET }}      # [osx]
           - export CONDA_BUILD_SYSROOT={{ CONDA_BUILD_SYSROOT }}                # [osx]
-          - OPENCV_FLAGS=`pkg-config --cflags opencv4`                          # [unix]
+          - OPENCV_FLAGS=`pkg-config --cflags opencv5`                          # [unix]
           - $CXX -std=c++11 test.cpp ${OPENCV_FLAGS} -o test                    # [unix]
           - if [[ $(./test) != $PKG_VERSION ]]; then exit 1 ; fi                # [unix]
           {% for each_opencv_lib in opencv_libs %}
